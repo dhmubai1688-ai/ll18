@@ -24,9 +24,6 @@
       }
 
       /* 主画布 */
-      /* 宽高保持 1200x700 不变（导出时用），
-   通过 JS 动态设置 transform:scale() 实现整体随窗口自适应缩放 */
-
       #poster {
         position: relative;
         width: 1200px;
@@ -93,6 +90,7 @@
         font-weight: 900;
         color: #ffdd87;
         z-index: 10;
+        line-height: 1;
       }
 
       /* ===============================
@@ -113,6 +111,8 @@
         color: #111;
         font-size: 22px;
         font-weight: 900;
+        line-height: 1;
+        text-align: center;
       }
 
       /* ===============================
@@ -133,7 +133,7 @@
       }
 
       /* ===============================
-右侧信息
+右侧信息 - 修复文字偏移问题
 ================================ */
 
       #userId {
@@ -144,6 +144,11 @@
         color: #ffd978;
         font-size: 20px;
         font-weight: 600;
+        line-height: 1.2;
+        /* 修复：使用 flex 确保垂直居中 */
+        display: flex;
+        align-items: center;
+        min-height: 30px;
       }
       #email {
         position: absolute;
@@ -152,6 +157,10 @@
         width: 240px;
         color: #ffd978;
         font-size: 18px;
+        line-height: 1.2;
+        display: flex;
+        align-items: center;
+        min-height: 30px;
       }
 
       #bonusText {
@@ -162,6 +171,10 @@
         color: #ffd978;
         font-size: 18px;
         font-weight: 700;
+        line-height: 1.2;
+        display: flex;
+        align-items: center;
+        min-height: 30px;
       }
 
       /* ===============================
@@ -175,6 +188,10 @@
         font-size: 44px;
         font-weight: 900;
         text-shadow: 0 0 10px rgba(240, 207, 110, 0.8);
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        min-height: 50px;
       }
 
       #reward {
@@ -186,24 +203,42 @@
         font-size: 44px;
         font-weight: 900;
         text-shadow: 0 0 10px rgba(240, 207, 110, 0.8);
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        min-height: 50px;
       }
 
       /* ===============================
-编辑状态
+编辑状态 - 优化显示
 ================================ */
 
       .editable {
         cursor: text;
+        /* 修复：确保编辑时不会影响布局 */
+        outline: none;
+        border: none;
+        background: transparent;
+        padding: 0;
+        margin: 0;
       }
 
       .editable:hover {
         outline: 1px dashed #00d9ff;
         background: rgba(0, 210, 255, 0.12);
+        /* 修复：hover 时不影响布局 */
+        box-sizing: border-box;
+      }
+
+      /* 修复：编辑时保持内容稳定 */
+      .editable:focus {
+        outline: 2px solid #00d9ff;
+        background: rgba(0, 210, 255, 0.15);
+        box-sizing: border-box;
       }
 
       /* ===============================
 按钮
-导出时隐藏
 ================================ */
 
       .toolbar {
@@ -214,11 +249,15 @@
         display: flex;
         gap: 10px;
         z-index: 100;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 10px 20px;
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
       }
 
       .toolbar button {
         padding: 12px 25px;
-        margin: 5px;
+        margin: 0;
         border: none;
         border-radius: 8px;
         background: #009dff;
@@ -226,10 +265,13 @@
         font-size: 16px;
         cursor: pointer;
         transition: background 0.2s;
+        font-weight: 600;
       }
 
       .toolbar button:hover {
         background: #006dcc;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(0, 157, 255, 0.4);
       }
 
       .toolbar button.copy-btn {
@@ -238,6 +280,16 @@
 
       .toolbar button.copy-btn:hover {
         background: #1e7e34;
+        box-shadow: 0 5px 20px rgba(40, 167, 69, 0.4);
+      }
+
+      .toolbar button.download-btn {
+        background: #6c757d;
+      }
+
+      .toolbar button.download-btn:hover {
+        background: #5a6268;
+        box-shadow: 0 5px 20px rgba(108, 117, 125, 0.4);
       }
 
       /* 复制成功提示 */
@@ -255,6 +307,7 @@
         opacity: 0;
         transition: opacity 0.3s ease;
         pointer-events: none;
+        backdrop-filter: blur(10px);
       }
 
       .toast.show {
@@ -272,6 +325,13 @@
       .exporting .editable:hover {
         outline: none;
         background: none;
+      }
+
+      /* 修复：导出时强制所有 editable 取消编辑状态 */
+      .exporting .editable {
+        outline: none !important;
+        background: none !important;
+        contenteditable: false !important;
       }
     </style>
   </head>
@@ -314,20 +374,13 @@
 
     <div class="toolbar">
       <button id="changeAvatar">📷 上传头像</button>
-      <button id="copyImage">📋 复制图片</button>
-      <button id="download">💾 导出PNG</button>
+      <button id="copyImage" class="copy-btn">📋 复制图片</button>
+      <button id="download" class="download-btn">💾 导出PNG</button>
     </div>
 
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
     <script>
-      /*
-==================================
- Axis Agent Template
- script.js
-==================================
-*/
-
       // ================================
       // Toast 提示
       // ================================
@@ -349,6 +402,13 @@
 
       editableElements.forEach((element) => {
         element.addEventListener("dblclick", function () {
+          // 确保所有其他元素取消编辑状态
+          editableElements.forEach((el) => {
+            if (el !== this && el.contentEditable === "true") {
+              el.contentEditable = "false";
+            }
+          });
+
           this.contentEditable = true;
           this.focus();
 
@@ -363,6 +423,16 @@
         // 点击其他地方保存
         element.addEventListener("blur", function () {
           this.contentEditable = false;
+          // 触发 input 事件保存数据
+          this.dispatchEvent(new Event("input"));
+        });
+
+        // 按 Enter 键保存并退出编辑
+        element.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            this.blur();
+          }
         });
       });
 
@@ -382,9 +452,25 @@
         const file = event.target.files[0];
         if (!file) return;
 
+        // 验证文件类型
+        if (!file.type.startsWith("image/")) {
+          showToast("⚠️ 请上传图片文件");
+          return;
+        }
+
+        // 验证文件大小（限制 5MB）
+        if (file.size > 5 * 1024 * 1024) {
+          showToast("⚠️ 图片大小不能超过 5MB");
+          return;
+        }
+
         const reader = new FileReader();
         reader.onload = function (e) {
           avatar.src = e.target.result;
+          showToast("✅ 头像上传成功！");
+        };
+        reader.onerror = function () {
+          showToast("⚠️ 头像上传失败");
         };
         reader.readAsDataURL(file);
       });
@@ -408,13 +494,26 @@
       fitPoster();
 
       // ================================
-      // 将海报转为 Canvas
+      // 将海报转为 Canvas（修复版）
       // ================================
       function renderPoster() {
         return new Promise((resolve, reject) => {
+          // 先取消所有元素的编辑状态
+          editableElements.forEach((el) => {
+            if (el.contentEditable === "true") {
+              el.contentEditable = "false";
+            }
+          });
+
           // 暂时取消缩放以获取原始尺寸
           const currentTransform = poster.style.transform;
           poster.style.transform = "none";
+
+          // 添加导出状态
+          document.body.classList.add("exporting");
+
+          // 强制重排以应用样式
+          poster.offsetHeight;
 
           html2canvas(poster, {
             width: 1200,
@@ -423,14 +522,30 @@
             useCORS: true,
             backgroundColor: null,
             logging: false,
+            allowTaint: true,
+            // 关键修复：使用 onclone 确保所有元素状态正确
+            onclone: function (clonedDoc) {
+              // 在克隆文档中，确保所有 editable 元素没有 contenteditable 属性
+              const clonedEditables = clonedDoc.querySelectorAll(".editable");
+              clonedEditables.forEach((el) => {
+                el.removeAttribute("contenteditable");
+                // 确保文本内容不变
+                const original = document.getElementById(el.id);
+                if (original) {
+                  el.textContent = original.textContent;
+                }
+              });
+            },
           })
             .then((canvas) => {
               // 恢复缩放
               poster.style.transform = currentTransform;
+              document.body.classList.remove("exporting");
               resolve(canvas);
             })
             .catch((err) => {
               poster.style.transform = currentTransform;
+              document.body.classList.remove("exporting");
               reject(err);
             });
         });
@@ -443,11 +558,16 @@
       const copyButton = document.getElementById("copyImage");
 
       copyButton.onclick = async function () {
+        const originalText = this.textContent;
+        this.textContent = "⏳ 生成中...";
+        this.disabled = true;
+
         try {
           // 检查浏览器是否支持 Clipboard API
           if (!navigator.clipboard || !navigator.clipboard.write) {
-            // 降级方案：先下载再复制？或者提示用户
-            showToast("⚠️ 当前浏览器不支持复制图片，请使用导出PNG功能");
+            showToast("⚠️ 请使用 Chrome/Edge 最新版本");
+            this.textContent = originalText;
+            this.disabled = false;
             return;
           }
 
@@ -460,6 +580,8 @@
 
           if (!blob) {
             showToast("⚠️ 图片生成失败，请重试");
+            this.textContent = originalText;
+            this.disabled = false;
             return;
           }
 
@@ -471,9 +593,16 @@
           ]);
 
           showToast("✅ 图片已复制到剪贴板！");
+          this.textContent = "✅ 已复制！";
+          setTimeout(() => {
+            this.textContent = originalText;
+          }, 1500);
         } catch (err) {
           console.error("复制失败:", err);
-          showToast("⚠️ 复制失败，请尝试使用导出PNG功能");
+          showToast("⚠️ 复制失败: " + (err.message || "未知错误"));
+          this.textContent = originalText;
+        } finally {
+          this.disabled = false;
         }
       };
 
@@ -484,22 +613,29 @@
       const download = document.getElementById("download");
 
       download.onclick = async function () {
+        const originalText = this.textContent;
+        this.textContent = "⏳ 导出中...";
+        this.disabled = true;
+
         try {
           const canvas = await renderPoster();
 
-          // 添加导出状态
-          document.body.classList.add("exporting");
-
           const link = document.createElement("a");
           link.download = "Axis_Agent_Certificate.png";
-          link.href = canvas.toDataURL("image/png");
+          link.href = canvas.toDataURL("image/png", 1.0);
           link.click();
 
-          document.body.classList.remove("exporting");
+          showToast("✅ 图片已导出！");
+          this.textContent = "✅ 已导出！";
+          setTimeout(() => {
+            this.textContent = originalText;
+          }, 1500);
         } catch (err) {
           console.error("导出失败:", err);
-          showToast("⚠️ 导出失败，请重试");
-          document.body.classList.remove("exporting");
+          showToast("⚠️ 导出失败: " + (err.message || "未知错误"));
+          this.textContent = originalText;
+        } finally {
+          this.disabled = false;
         }
       };
 
@@ -522,9 +658,9 @@
       saveKeys.forEach((id) => {
         const el = document.getElementById(id);
         if (el) {
-          const value = localStorage.getItem(id);
-          if (value) {
-            el.innerHTML = value;
+          const value = localStorage.getItem("cert_" + id);
+          if (value && value.trim() !== "") {
+            el.textContent = value;
           }
         }
       });
@@ -534,20 +670,51 @@
         const el = document.getElementById(id);
         if (el) {
           el.addEventListener("input", function () {
-            localStorage.setItem(id, this.innerHTML);
+            localStorage.setItem("cert_" + id, this.textContent);
           });
         }
       });
 
       // ================================
-      // 键盘快捷键：Ctrl+Shift+C 复制图片
+      // 键盘快捷键
       // ================================
+
+      // Ctrl+Shift+C 复制图片
       document.addEventListener("keydown", function (e) {
         if (e.ctrlKey && e.shiftKey && (e.key === "c" || e.key === "C")) {
           e.preventDefault();
           copyButton.click();
         }
+        // Ctrl+S 导出图片
+        if (e.ctrlKey && (e.key === "s" || e.key === "S")) {
+          e.preventDefault();
+          download.click();
+        }
       });
+
+      // ================================
+      // 控制台提示
+      // ================================
+
+      console.log("🎨 Axis Agent Certificate 已加载");
+      console.log("📋 快捷键:");
+      console.log("  - Ctrl+Shift+C : 复制图片到剪贴板");
+      console.log("  - Ctrl+S       : 导出 PNG 图片");
+      console.log("✏️  双击任意文字可编辑");
+      console.log("📷 点击「上传头像」更换头像");
+
+      // ================================
+      // 错误处理
+      // ================================
+
+      window.addEventListener("error", function (e) {
+        console.warn("页面错误:", e.message);
+      });
+
+      if (typeof html2canvas === "undefined") {
+        showToast("⚠️ html2canvas 库加载失败，请检查网络");
+        console.error("html2canvas 未加载");
+      }
     </script>
   </body>
 </html>
