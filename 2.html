@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Axis Agent Certificate</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #111;
+        font-family: "Segoe UI", Arial, sans-serif;
+        overflow: hidden;
+      }
+
+      /* 主画布 */
+      /* 宽高保持 1200x700 不变（导出时用），
+   通过 JS 动态设置 transform:scale() 实现整体随窗口自适应缩放 */
+
+      #poster {
+        position: relative;
+        width: 1200px;
+        height: 700px;
+        overflow: hidden;
+        user-select: none;
+        transform-origin: center center;
+        flex-shrink: 0;
+      }
+
+      /* 背景图片 */
+      .bg {
+        position: absolute;
+        width: 1200px;
+        height: 700px;
+        left: 0;
+        top: 0;
+        object-fit: cover;
+        z-index: 0;
+      }
+
+      /* ===============================
+头像区域
+================================ */
+
+      .avatarBox {
+        position: absolute;
+        left: 450px;
+        top: 182px;
+        width: 296px;
+        height: 296px;
+        border-radius: 50%;
+        padding: 5px;
+        background: linear-gradient(135deg, #fff1bd, #b8860b, #fff, #b8860b);
+        box-shadow: 0 0 35px rgba(255, 215, 100, 0.7);
+        z-index: 5;
+      }
+
+      #avatar {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      #upload {
+        display: none;
+      }
+
+      /* ===============================
+奖牌数字
+================================ */
+
+      #medalNumber {
+        position: absolute;
+        left: 332px;
+        top: 265px;
+        width: 70px;
+        height: 90px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 48px;
+        font-weight: 900;
+        color: #ffdd87;
+        z-index: 10;
+      }
+
+      /* ===============================
+底部 Congratulations
+================================ */
+
+      #banner {
+        position: absolute;
+        left: 470px;
+        top: 469px;
+        width: 260px;
+        height: 45px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 30px;
+        background: linear-gradient(90deg, #b8860b, #ffe9a8, #b8860b);
+        color: #111;
+        font-size: 22px;
+        font-weight: 900;
+      }
+
+      /* ===============================
+欢迎文字
+================================ */
+
+      #welcome {
+        position: absolute;
+        right: 70px;
+        top: 215px;
+        width: 300px;
+        text-align: center;
+        color: #ffd978;
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 1.35;
+        text-shadow: 0 0 8px rgba(255, 215, 100, 0.6);
+      }
+
+      /* ===============================
+右侧信息
+================================ */
+
+      #userId {
+        position: absolute;
+        right: 70px;
+        top: 360px;
+        width: 240px;
+        color: #ffd978;
+        font-size: 20px;
+        font-weight: 600;
+      }
+      #email {
+        position: absolute;
+        right: 70px;
+        top: 408px;
+        width: 240px;
+        color: #ffd978;
+        font-size: 18px;
+      }
+
+      #bonusText {
+        position: absolute;
+        right: 67px;
+        top: 457px;
+        width: 240px;
+        color: #ffd978;
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      /* ===============================
+等级
+================================ */
+      #level {
+        position: absolute;
+        left: 820px;
+        top: 520px;
+        color: #ffd978;
+        font-size: 44px;
+        font-weight: 900;
+        text-shadow: 0 0 10px rgba(255, 215, 100, 0.8);
+      }
+
+      #reward {
+        position: absolute;
+        left: 922px;
+        top: 520px;
+        width: 190px;
+        color: #ffd978;
+        font-size: 44px;
+        font-weight: 900;
+        text-shadow: 0 0 10px rgba(255, 215, 100, 0.8);
+      }
+
+      /* ===============================
+编辑状态
+================================ */
+
+      .editable {
+        cursor: text;
+      }
+
+      .editable:hover {
+        outline: 1px dashed #00d9ff;
+        background: rgba(0, 210, 255, 0.12);
+      }
+
+      /* ===============================
+按钮
+导出时隐藏
+================================ */
+
+      .toolbar {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+        z-index: 100;
+      }
+
+      .toolbar button {
+        padding: 12px 25px;
+        margin: 5px;
+        border: none;
+        border-radius: 8px;
+        background: #009dff;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .toolbar button:hover {
+        background: #006dcc;
+      }
+
+      .toolbar button.copy-btn {
+        background: #28a745;
+      }
+
+      .toolbar button.copy-btn:hover {
+        background: #1e7e34;
+      }
+
+      /* 复制成功提示 */
+      .toast {
+        position: fixed;
+        top: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.85);
+        color: #fff;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-size: 16px;
+        z-index: 999;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+      }
+
+      .toast.show {
+        opacity: 1;
+      }
+
+      /* ===============================
+导出模式
+================================ */
+
+      .exporting .toolbar {
+        display: none;
+      }
+
+      .exporting .editable:hover {
+        outline: none;
+        background: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Toast 提示 -->
+    <div id="toast" class="toast">✅ 图片已复制到剪贴板！</div>
+
+    <div id="poster">
+      <!-- 背景 -->
+      <img class="bg" src="3.jpg" alt="background" />
+
+      <!-- 头像 -->
+      <div class="avatarBox">
+        <img id="avatar" src="images/avatar.png" alt="avatar" />
+        <input type="file" id="upload" accept="image/*" />
+      </div>
+
+      <!-- 奖牌数字 -->
+      <div id="medalNumber" class="editable">1</div>
+
+      <!-- Congratulations -->
+      <div id="banner" class="editable">Congratulation</div>
+
+      <!-- ID -->
+      <div id="userId" class="editable">8776843</div>
+
+      <!-- 邮箱 -->
+      <div id="email" class="editable">ken****nne@gmail.com</div>
+
+      <!-- 奖励文字 -->
+      <div id="bonusText" class="editable">Upgrade Bonus</div>
+
+      <!-- 等级 -->
+      <div id="level" class="editable">LV1</div>
+
+      <!-- USDT -->
+      <div id="reward" class="editable">50 USDT</div>
+    </div>
+
+    <div class="toolbar">
+      <button id="changeAvatar">📷 上传头像</button>
+      <button id="copyImage">📋 复制图片</button>
+      <button id="download">💾 导出PNG</button>
+    </div>
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+    <script>
+      /*
+==================================
+ Axis Agent Template
+ script.js
+==================================
+*/
+
+      // ================================
+      // Toast 提示
+      // ================================
+      function showToast(message = "✅ 图片已复制到剪贴板！") {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.classList.add("show");
+        clearTimeout(toast._timeout);
+        toast._timeout = setTimeout(() => {
+          toast.classList.remove("show");
+        }, 2000);
+      }
+
+      // ================================
+      // 双击编辑文字
+      // ================================
+
+      const editableElements = document.querySelectorAll(".editable");
+
+      editableElements.forEach((element) => {
+        element.addEventListener("dblclick", function () {
+          this.contentEditable = true;
+          this.focus();
+
+          // 全选当前文字
+          const range = document.createRange();
+          range.selectNodeContents(this);
+          const selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+        });
+
+        // 点击其他地方保存
+        element.addEventListener("blur", function () {
+          this.contentEditable = false;
+        });
+      });
+
+      // ================================
+      // 上传头像
+      // ================================
+
+      const avatar = document.getElementById("avatar");
+      const upload = document.getElementById("upload");
+      const changeButton = document.getElementById("changeAvatar");
+
+      changeButton.onclick = function () {
+        upload.click();
+      };
+
+      upload.addEventListener("change", function (event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          avatar.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+
+      // ================================
+      // 整体自适应缩放
+      // ================================
+
+      const poster = document.getElementById("poster");
+
+      function fitPoster() {
+        const padding = 40;
+        const scaleX = (window.innerWidth - padding) / 1200;
+        const scaleY = (window.innerHeight - padding) / 700;
+        const scale = Math.min(scaleX, scaleY, 1);
+        poster.style.transform = `scale(${scale})`;
+      }
+
+      window.addEventListener("resize", fitPoster);
+      window.addEventListener("load", fitPoster);
+      fitPoster();
+
+      // ================================
+      // 将海报转为 Canvas
+      // ================================
+      function renderPoster() {
+        return new Promise((resolve, reject) => {
+          // 暂时取消缩放以获取原始尺寸
+          const currentTransform = poster.style.transform;
+          poster.style.transform = "none";
+
+          html2canvas(poster, {
+            width: 1200,
+            height: 700,
+            scale: 2,
+            useCORS: true,
+            backgroundColor: null,
+            logging: false,
+          })
+            .then((canvas) => {
+              // 恢复缩放
+              poster.style.transform = currentTransform;
+              resolve(canvas);
+            })
+            .catch((err) => {
+              poster.style.transform = currentTransform;
+              reject(err);
+            });
+        });
+      }
+
+      // ================================
+      // 复制图片到剪贴板
+      // ================================
+
+      const copyButton = document.getElementById("copyImage");
+
+      copyButton.onclick = async function () {
+        try {
+          // 检查浏览器是否支持 Clipboard API
+          if (!navigator.clipboard || !navigator.clipboard.write) {
+            // 降级方案：先下载再复制？或者提示用户
+            showToast("⚠️ 当前浏览器不支持复制图片，请使用导出PNG功能");
+            return;
+          }
+
+          const canvas = await renderPoster();
+
+          // 将 Canvas 转为 Blob
+          const blob = await new Promise((resolve) => {
+            canvas.toBlob(resolve, "image/png");
+          });
+
+          if (!blob) {
+            showToast("⚠️ 图片生成失败，请重试");
+            return;
+          }
+
+          // 复制到剪贴板
+          await navigator.clipboard.write([
+            new ClipboardItem({
+              [blob.type]: blob,
+            }),
+          ]);
+
+          showToast("✅ 图片已复制到剪贴板！");
+        } catch (err) {
+          console.error("复制失败:", err);
+          showToast("⚠️ 复制失败，请尝试使用导出PNG功能");
+        }
+      };
+
+      // ================================
+      // 导出 PNG
+      // ================================
+
+      const download = document.getElementById("download");
+
+      download.onclick = async function () {
+        try {
+          const canvas = await renderPoster();
+
+          // 添加导出状态
+          document.body.classList.add("exporting");
+
+          const link = document.createElement("a");
+          link.download = "Axis_Agent_Certificate.png";
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+
+          document.body.classList.remove("exporting");
+        } catch (err) {
+          console.error("导出失败:", err);
+          showToast("⚠️ 导出失败，请重试");
+          document.body.classList.remove("exporting");
+        }
+      };
+
+      // ================================
+      // 自动保存文字
+      // ================================
+
+      const saveKeys = [
+        "medalNumber",
+        "banner",
+        "welcome",
+        "userId",
+        "email",
+        "bonusText",
+        "level",
+        "reward",
+      ];
+
+      // 恢复保存的数据
+      saveKeys.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) {
+          const value = localStorage.getItem(id);
+          if (value) {
+            el.innerHTML = value;
+          }
+        }
+      });
+
+      // 保存数据
+      saveKeys.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener("input", function () {
+            localStorage.setItem(id, this.innerHTML);
+          });
+        }
+      });
+
+      // ================================
+      // 键盘快捷键：Ctrl+Shift+C 复制图片
+      // ================================
+      document.addEventListener("keydown", function (e) {
+        if (e.ctrlKey && e.shiftKey && (e.key === "c" || e.key === "C")) {
+          e.preventDefault();
+          copyButton.click();
+        }
+      });
+    </script>
+  </body>
+</html>
