@@ -493,19 +493,15 @@
             }
           });
 
-          // ===== 修改开始 =====
-          // 保存当前状态
+          // ===== 第一处修改：固定截图位置 =====
           const currentTransform = poster.style.transform;
-
-          // 固定截图位置，避免取消缩放导致下移
-          const rect = poster.getBoundingClientRect();
 
           poster.style.transform = "none";
           poster.style.position = "fixed";
           poster.style.left = "0px";
           poster.style.top = "0px";
           poster.style.margin = "0";
-          // ===== 修改结束 =====
+          // ===== 第一处修改结束 =====
 
           // 添加导出状态
           document.body.classList.add("exporting");
@@ -513,11 +509,12 @@
           // 强制重排以应用样式
           poster.offsetHeight;
 
+          // ===== 第三处修改：html2canvas 增加 x:0, y:0 =====
           html2canvas(poster, {
             width: 1200,
             height: 700,
-            x: 0, // 新增
-            y: 0, // 新增
+            x: 0,
+            y: 0,
             scale: 2,
             useCORS: true,
             backgroundColor: null,
@@ -535,26 +532,24 @@
             },
           })
             .then((canvas) => {
-              // ===== 修改开始 =====
-              // 恢复样式
+              // ===== 第二处修改：恢复样式（成功时） =====
               poster.style.transform = currentTransform;
               poster.style.position = "";
               poster.style.left = "";
               poster.style.top = "";
               poster.style.margin = "";
-              // ===== 修改结束 =====
+              // ===== 第二处修改结束 =====
               document.body.classList.remove("exporting");
               resolve(canvas);
             })
             .catch((err) => {
-              // ===== 修改开始 =====
-              // 恢复样式
+              // ===== 第二处修改：恢复样式（失败时） =====
               poster.style.transform = currentTransform;
               poster.style.position = "";
               poster.style.left = "";
               poster.style.top = "";
               poster.style.margin = "";
-              // ===== 修改结束 =====
+              // ===== 第二处修改结束 =====
               document.body.classList.remove("exporting");
               reject(err);
             });
