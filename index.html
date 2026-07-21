@@ -145,7 +145,6 @@
         font-size: 20px;
         font-weight: 600;
         line-height: 1.2;
-        /* 修复：使用 flex 确保垂直居中 */
         display: flex;
         align-items: center;
         min-height: 30px;
@@ -215,7 +214,6 @@
 
       .editable {
         cursor: text;
-        /* 修复：确保编辑时不会影响布局 */
         outline: none;
         border: none;
         background: transparent;
@@ -226,11 +224,9 @@
       .editable:hover {
         outline: 1px dashed #00d9ff;
         background: rgba(0, 210, 255, 0.12);
-        /* 修复：hover 时不影响布局 */
         box-sizing: border-box;
       }
 
-      /* 修复：编辑时保持内容稳定 */
       .editable:focus {
         outline: 2px solid #00d9ff;
         background: rgba(0, 210, 255, 0.15);
@@ -327,7 +323,6 @@
         background: none;
       }
 
-      /* 修复：导出时强制所有 editable 取消编辑状态 */
       .exporting .editable {
         outline: none !important;
         background: none !important;
@@ -402,7 +397,6 @@
 
       editableElements.forEach((element) => {
         element.addEventListener("dblclick", function () {
-          // 确保所有其他元素取消编辑状态
           editableElements.forEach((el) => {
             if (el !== this && el.contentEditable === "true") {
               el.contentEditable = "false";
@@ -412,7 +406,6 @@
           this.contentEditable = true;
           this.focus();
 
-          // 全选当前文字
           const range = document.createRange();
           range.selectNodeContents(this);
           const selection = window.getSelection();
@@ -420,14 +413,11 @@
           selection.addRange(range);
         });
 
-        // 点击其他地方保存
         element.addEventListener("blur", function () {
           this.contentEditable = false;
-          // 触发 input 事件保存数据
           this.dispatchEvent(new Event("input"));
         });
 
-        // 按 Enter 键保存并退出编辑
         element.addEventListener("keydown", function (e) {
           if (e.key === "Enter") {
             e.preventDefault();
@@ -452,13 +442,11 @@
         const file = event.target.files[0];
         if (!file) return;
 
-        // 验证文件类型
         if (!file.type.startsWith("image/")) {
           showToast("⚠️ 请上传图片文件");
           return;
         }
 
-        // 验证文件大小（限制 5MB）
         if (file.size > 5 * 1024 * 1024) {
           showToast("⚠️ 图片大小不能超过 5MB");
           return;
@@ -505,9 +493,19 @@
             }
           });
 
-          // 暂时取消缩放以获取原始尺寸
+          // ===== 修改开始 =====
+          // 保存当前状态
           const currentTransform = poster.style.transform;
+
+          // 固定截图位置，避免取消缩放导致下移
+          const rect = poster.getBoundingClientRect();
+
           poster.style.transform = "none";
+          poster.style.position = "fixed";
+          poster.style.left = "0px";
+          poster.style.top = "0px";
+          poster.style.margin = "0";
+          // ===== 修改结束 =====
 
           // 添加导出状态
           document.body.classList.add("exporting");
@@ -518,18 +516,17 @@
           html2canvas(poster, {
             width: 1200,
             height: 700,
+            x: 0, // 新增
+            y: 0, // 新增
             scale: 2,
             useCORS: true,
             backgroundColor: null,
             logging: false,
             allowTaint: true,
-            // 关键修复：使用 onclone 确保所有元素状态正确
             onclone: function (clonedDoc) {
-              // 在克隆文档中，确保所有 editable 元素没有 contenteditable 属性
               const clonedEditables = clonedDoc.querySelectorAll(".editable");
               clonedEditables.forEach((el) => {
                 el.removeAttribute("contenteditable");
-                // 确保文本内容不变
                 const original = document.getElementById(el.id);
                 if (original) {
                   el.textContent = original.textContent;
@@ -538,13 +535,26 @@
             },
           })
             .then((canvas) => {
-              // 恢复缩放
+              // ===== 修改开始 =====
+              // 恢复样式
               poster.style.transform = currentTransform;
+              poster.style.position = "";
+              poster.style.left = "";
+              poster.style.top = "";
+              poster.style.margin = "";
+              // ===== 修改结束 =====
               document.body.classList.remove("exporting");
               resolve(canvas);
             })
             .catch((err) => {
+              // ===== 修改开始 =====
+              // 恢复样式
               poster.style.transform = currentTransform;
+              poster.style.position = "";
+              poster.style.left = "";
+              poster.style.top = "";
+              poster.style.margin = "";
+              // ===== 修改结束 =====
               document.body.classList.remove("exporting");
               reject(err);
             });
@@ -563,7 +573,6 @@
         this.disabled = true;
 
         try {
-          // 检查浏览器是否支持 Clipboard API
           if (!navigator.clipboard || !navigator.clipboard.write) {
             showToast("⚠️ 请使用 Chrome/Edge 最新版本");
             this.textContent = originalText;
@@ -573,7 +582,6 @@
 
           const canvas = await renderPoster();
 
-          // 将 Canvas 转为 Blob
           const blob = await new Promise((resolve) => {
             canvas.toBlob(resolve, "image/png");
           });
@@ -585,7 +593,6 @@
             return;
           }
 
-          // 复制到剪贴板
           await navigator.clipboard.write([
             new ClipboardItem({
               [blob.type]: blob,
@@ -654,7 +661,6 @@
         "reward",
       ];
 
-      // 恢复保存的数据
       saveKeys.forEach((id) => {
         const el = document.getElementById(id);
         if (el) {
@@ -665,7 +671,6 @@
         }
       });
 
-      // 保存数据
       saveKeys.forEach((id) => {
         const el = document.getElementById(id);
         if (el) {
@@ -679,13 +684,11 @@
       // 键盘快捷键
       // ================================
 
-      // Ctrl+Shift+C 复制图片
       document.addEventListener("keydown", function (e) {
         if (e.ctrlKey && e.shiftKey && (e.key === "c" || e.key === "C")) {
           e.preventDefault();
           copyButton.click();
         }
-        // Ctrl+S 导出图片
         if (e.ctrlKey && (e.key === "s" || e.key === "S")) {
           e.preventDefault();
           download.click();
