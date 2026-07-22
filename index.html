@@ -8,6 +8,14 @@
       href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
 
     <style>
@@ -1477,23 +1485,70 @@
           const levelVal = levelInput.value || "LV1";
           const rewardVal = rewardInput.value || "50 USDT";
 
-          // ---- 奖牌 ----
+          // ---- 奖牌（带渐变色 + Cinzel字体 + 立体阴影） ----
+          // 根据当前模板生成不同渐变色
+          function getMedalGradient(templateName) {
+            if (templateName === "gold") {
+              // 金色模板 - 亮金渐变
+              return new fabric.Gradient({
+                type: "linear",
+                coords: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                colorStops: [
+                  { offset: 0, color: "#fff7b0" },
+                  { offset: 0.3, color: "#f5c842" },
+                  { offset: 0.7, color: "#b8860b" },
+                  { offset: 1, color: "#ffd700" },
+                ],
+              });
+            } else if (templateName === "dark") {
+              // 暗黑模板 - 冰蓝渐变
+              return new fabric.Gradient({
+                type: "linear",
+                coords: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                colorStops: [
+                  { offset: 0, color: "#a8e8ff" },
+                  { offset: 0.3, color: "#4dc3e8" },
+                  { offset: 0.7, color: "#0088b8" },
+                  { offset: 1, color: "#66d0ff" },
+                ],
+              });
+            } else {
+              // 默认模板 - 暖金渐变
+              return new fabric.Gradient({
+                type: "linear",
+                coords: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                colorStops: [
+                  { offset: 0, color: "#fff5b0" },
+                  { offset: 0.3, color: "#d89b22" },
+                  { offset: 0.7, color: "#8b5200" },
+                  { offset: 1, color: "#ffd966" },
+                ],
+              });
+            }
+          }
+
+          const medalGradient = getMedalGradient(currentTemplate);
+
           const medal = new fabric.Text(medalVal, {
             left: elems.medal.left,
             top: elems.medal.top,
             fontSize: elems.medal.fontSize,
             fontWeight: 900,
-            fill: elems.medal.color,
-            fontFamily: "'Segoe UI', system-ui, sans-serif",
+            fill: medalGradient,
+            fontFamily: "'Cinzel', serif",
             textAlign: "center",
             originX: "center",
             originY: "center",
+            // 立体阴影（向右下偏移）
             shadow: new fabric.Shadow({
-              color: "rgba(255,200,80,0.5)",
-              blur: 12,
-              offsetX: 0,
-              offsetY: 0,
+              color: "rgba(0,0,0,0.6)",
+              blur: 8,
+              offsetX: 3,
+              offsetY: 5,
             }),
+            // 描边增加清晰度
+            stroke: currentTemplate === "dark" ? "#005577" : "#6b3b00",
+            strokeWidth: 0.5,
             selectable: true,
             evented: true,
             cursor: "move",
@@ -1538,7 +1593,7 @@
             fontSize: elems.banner.fontSize,
             fontWeight: 900,
             fill: elems.banner.color,
-            fontFamily: "'Segoe UI', system-ui, sans-serif",
+            fontFamily: "'Rajdhani', sans-serif",
             textAlign: "center",
             originX: "center",
             originY: "center",
