@@ -1,892 +1,411 @@
 <!doctype html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>Axis Agent · Certificate</title>
-
-    <style>
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      body {
-        width: 100vw;
-        height: 100vh;
-
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        background: #0b0b0b;
-
-        font-family:
-          "Segoe UI",
-          system-ui,
-          -apple-system,
-          sans-serif;
-
-        overflow: hidden;
-      }
-
-      /* ==========================
-   主海报
-========================== */
-
-      #poster {
-        position: relative;
-
-        width: 1200px;
-        height: 700px;
-
-        flex-shrink: 0;
-
-        transform-origin: center center;
-
-        transform: scale(1);
-
-        overflow: hidden;
-
-        border-radius: 12px;
-
-        background: #1a1a1a;
-
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-
-        user-select: none;
-      }
-
-      /* ==========================
-   背景
-========================== */
-
-      .bg {
-        position: absolute;
-
-        left: 0;
-        top: 0;
-
-        width: 1200px;
-        height: 700px;
-
-        object-fit: cover;
-
-        z-index: 0;
-      }
-
-      /* ==========================
-   头像
-========================== */
-
-      .avatarBox {
-        position: absolute;
-
-        left: 450px;
-        top: 182px;
-
-        width: 296px;
-        height: 296px;
-
-        border-radius: 50%;
-
-        padding: 5px;
-
-        background: linear-gradient(135deg, #fff1bd, #b8860b, #fff, #b8860b);
-
-        box-shadow: 0 0 35px rgba(255, 215, 100, 0.7);
-
-        z-index: 5;
-      }
-
-      #avatar {
-        width: 100%;
-        height: 100%;
-
-        border-radius: 50%;
-
-        object-fit: cover;
-
-        display: block;
-      }
-
-      #upload {
-        display: none;
-      }
-
-      /* ==========================
-   可编辑文字
-========================== */
-
-      .editable {
-        cursor: text;
-
-        outline: none;
-
-        border: none;
-
-        background: transparent;
-
-        padding: 0;
-
-        margin: 0;
-      }
-
-      .editable:hover {
-        outline: 1px dashed rgba(0, 210, 255, 0.6);
-      }
-
-      .editable:focus {
-        outline: 2px solid #00d9ff;
-      }
-
-      /* ==========================
-   奖牌数字
-========================== */
-
-      #medalNumber {
-        position: absolute;
-
-        left: 332px;
-
-        top: 265px;
-
-        width: 70px;
-
-        height: 90px;
-
-        display: flex;
-
-        justify-content: center;
-
-        align-items: center;
-
-        font-size: 48px;
-
-        font-weight: 900;
-
-        color: #ffdd87;
-
-        z-index: 10;
-
-        text-shadow: 0 0 12px rgba(255, 200, 80, 0.5);
-      }
-
-      /* ==========================
-   Congratulations
-========================== */
-
-      #banner {
-        position: absolute;
-
-        left: 470px;
-
-        top: 469px;
-
-        width: 260px;
-
-        height: 45px;
-
-        display: flex;
-
-        justify-content: center;
-
-        align-items: center;
-
-        border-radius: 30px;
-
-        background: linear-gradient(90deg, #b8860b, #ffe9a8, #b8860b);
-
-        color: #111;
-
-        font-size: 22px;
-
-        font-weight: 900;
-
-        box-shadow: 0 2px 12px rgba(184, 134, 11, 0.4);
-      }
-
-      /* ==========================
-   用户信息
-========================== */
-
-      #userId {
-        position: absolute;
-
-        right: 70px;
-
-        top: 355px;
-
-        width: 240px;
-
-        color: #ffd978;
-
-        font-size: 20px;
-
-        font-weight: 600;
-
-        line-height: 1.3;
-
-        display: flex;
-
-        align-items: center;
-
-        min-height: 30px;
-
-        text-shadow: 0 0 8px rgba(255, 215, 100, 0.4);
-      }
-
-      #email {
-        position: absolute;
-
-        right: 70px;
-
-        top: 402px;
-
-        width: 240px;
-
-        color: #ffd978;
-
-        font-size: 18px;
-
-        line-height: 1.3;
-
-        display: flex;
-
-        align-items: center;
-
-        min-height: 30px;
-      }
-
-      #bonusText {
-        position: absolute;
-
-        right: 67px;
-
-        top: 457px;
-
-        width: 240px;
-
-        color: #ffd978;
-
-        font-size: 18px;
-
-        font-weight: 700;
-
-        line-height: 1.3;
-
-        display: flex;
-
-        align-items: center;
-
-        min-height: 30px;
-      }
-
-      /* ==========================
-   等级
-========================== */
-
-      #level {
-        position: absolute;
-
-        left: 820px;
-
-        top: 525px;
-
-        color: #e2c376;
-
-        font-size: 44px;
-
-        font-weight: 900;
-
-        line-height: 1;
-
-        text-shadow: 0 0 10px rgba(240, 207, 110, 0.8);
-      }
-
-      #reward {
-        position: absolute;
-
-        left: 920px;
-
-        top: 525px;
-
-        width: 215px;
-
-        color: #e2c376;
-
-        font-size: 44px;
-
-        font-weight: 900;
-
-        line-height: 1;
-
-        text-shadow: 0 0 10px rgba(240, 207, 110, 0.8);
-      }
-
-      /* ==========================
-工具栏
-========================== */
-
-      .toolbar {
-        position: fixed;
-
-        bottom: 30px;
-
-        left: 50%;
-
-        transform: translateX(-50%);
-
-        display: flex;
-
-        gap: 12px;
-
-        padding: 12px 24px;
-
-        border-radius: 40px;
-
-        background: rgba(0, 0, 0, 0.75);
-
-        z-index: 100;
-      }
-
-      .toolbar button {
-        padding: 10px 22px;
-
-        border: none;
-
-        border-radius: 30px;
-
-        color: white;
-
-        cursor: pointer;
-
-        font-size: 15px;
-
-        font-weight: 600;
-      }
-
-      .copy-btn {
-        background: #28a745;
-      }
-
-      .download-btn {
-        background: #6c757d;
-      }
-
-      #changeAvatar {
-        background: #2d7aff;
-      }
-
-      /* ==========================
-提示
-========================== */
-
-      .toast {
-        position: fixed;
-
-        top: 30px;
-
-        left: 50%;
-
-        transform: translateX(-50%);
-
-        padding: 12px 30px;
-
-        border-radius: 40px;
-
-        background: rgba(0, 0, 0, 0.85);
-
-        color: white;
-
-        opacity: 0;
-
-        transition: 0.3s;
-
-        z-index: 999;
-      }
-
-      .toast.show {
-        opacity: 1;
-      }
-
-      /* 导出隐藏 */
-
-      .exporting .toolbar {
-        display: none;
-      }
-
-      .exporting .editable {
-        outline: none !important;
-
-        background: none !important;
-      }
-    </style>
-  </head>
-
-  <body>
-    <!-- ==========================
-     Toast提示
-========================== -->
-
-    <div id="toast" class="toast">✅ 操作成功</div>
-
-    <!-- ==========================
-     主海报
-========================== -->
-
-    <div id="poster">
-      <!-- 背景 -->
-      <img class="bg" src="3.jpg" alt="background" />
-
-      <!-- 头像 -->
-
-      <div class="avatarBox">
-        <img id="avatar" src="https://i.pravatar.cc/300?img=11" alt="avatar" />
-
-        <input type="file" id="upload" accept="image/*" />
-      </div>
-
-      <!-- 奖牌 -->
-
-      <div id="medalNumber" class="editable">1</div>
-
-      <!-- 标题 -->
-
-      <div id="banner" class="editable">Congratulation</div>
-
-      <!-- ID -->
-
-      <div id="userId" class="editable">8776843</div>
-
-      <!-- 邮箱 -->
-
-      <div id="email" class="editable">ken****nne@gmail.com</div>
-
-      <!-- 奖励 -->
-
-      <div id="bonusText" class="editable">Upgrade Bonus</div>
-
-      <!-- 等级 -->
-
-      <div id="level" class="editable">LV1</div>
-
-      <!-- USDT -->
-
-      <div id="reward" class="editable">50 USDT</div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Axis Agent · Certificate</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 100vw; height: 100vh;
+      display: flex; justify-content: center; align-items: center;
+      background: #0b0b0b;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+    }
+
+    #poster {
+      position: relative;
+      width: 1200px; height: 700px;
+      flex-shrink: 0;
+      transform-origin: center center;
+      overflow: hidden;
+      border-radius: 12px;
+      background: #1a1a1a;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+      user-select: none;
+    }
+
+    .bg {
+      position: absolute; left: 0; top: 0;
+      width: 1200px; height: 700px;
+      object-fit: cover; z-index: 0;
+    }
+
+    .avatarBox {
+      position: absolute; left: 450px; top: 182px;
+      width: 296px; height: 296px;
+      border-radius: 50%; padding: 5px;
+      background: linear-gradient(135deg, #fff1bd, #b8860b, #fff, #b8860b);
+      box-shadow: 0 0 35px rgba(255,215,100,0.7);
+      z-index: 5;
+    }
+    #avatar {
+      width: 100%; height: 100%; border-radius: 50%;
+      object-fit: cover; display: block;
+    }
+    #upload { display: none; }
+
+    /* ===== 可编辑文字 ===== */
+    .editable {
+      cursor: text; outline: none; border: none;
+      background: transparent; padding: 0; margin: 0;
+    }
+    .editable:hover { outline: 1px dashed rgba(0,210,255,0.6); }
+    .editable:focus { outline: 2px solid #00d9ff; }
+
+    /* ===== 奖牌数字 ===== */
+    #medalNumber {
+      position: absolute; left: 332px; top: 265px;
+      width: 70px; height: 90px;
+      font-size: 48px; font-weight: 900; color: #ffdd87;
+      z-index: 10; text-shadow: 0 0 12px rgba(255,200,80,0.5);
+      line-height: 90px; text-align: center;
+    }
+
+    /* ===== Congratulations ===== */
+    #banner {
+      position: absolute; left: 470px; top: 469px;
+      width: 260px; height: 45px;
+      border-radius: 30px;
+      background: linear-gradient(90deg, #b8860b, #ffe9a8, #b8860b);
+      color: #111; font-size: 22px; font-weight: 900;
+      box-shadow: 0 2px 12px rgba(184,134,11,0.4);
+      line-height: 45px; text-align: center;
+    }
+
+    /* ===== 用户信息 ===== */
+    #userId {
+      position: absolute; right: 70px; top: 355px;
+      width: 240px; height: 30px;
+      color: #ffd978; font-size: 20px; font-weight: 600;
+      line-height: 30px; text-align: center;
+      text-shadow: 0 0 8px rgba(255,215,100,0.4);
+    }
+    #email {
+      position: absolute; right: 70px; top: 402px;
+      width: 240px; height: 30px;
+      color: #ffd978; font-size: 18px;
+      line-height: 30px; text-align: center;
+    }
+    #bonusText {
+      position: absolute; right: 67px; top: 457px;
+      width: 240px; height: 30px;
+      color: #ffd978; font-size: 18px; font-weight: 700;
+      line-height: 30px; text-align: center;
+    }
+
+    /* ===== 等级 / USDT ===== */
+    #level {
+      position: absolute; left: 820px; top: 525px;
+      color: #e2c376; font-size: 44px; font-weight: 900;
+      line-height: 50px; text-align: center;
+      text-shadow: 0 0 10px rgba(240,207,110,0.8);
+    }
+    #reward {
+      position: absolute; left: 920px; top: 525px;
+      width: 215px;
+      color: #e2c376; font-size: 44px; font-weight: 900;
+      line-height: 50px; text-align: center;
+      text-shadow: 0 0 10px rgba(240,207,110,0.8);
+    }
+
+    /* ===== 工具栏 ===== */
+    .toolbar {
+      position: fixed; bottom: 30px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; gap: 12px; padding: 12px 24px;
+      border-radius: 40px;
+      background: rgba(0,0,0,0.75); z-index: 100;
+    }
+    .toolbar button {
+      padding: 10px 22px; border: none; border-radius: 30px;
+      color: white; cursor: pointer; font-size: 15px; font-weight: 600;
+    }
+    #changeAvatar { background: #2d7aff; }
+    .copy-btn { background: #28a745; }
+    .download-btn { background: #6c757d; }
+
+    /* ===== Toast ===== */
+    .toast {
+      position: fixed; top: 30px; left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 30px; border-radius: 40px;
+      background: rgba(0,0,0,0.85); color: white;
+      opacity: 0; transition: 0.3s; z-index: 999;
+    }
+    .toast.show { opacity: 1; }
+
+    .exporting .toolbar { display: none; }
+    .exporting .editable { outline: none !important; background: none !important; }
+  </style>
+</head>
+<body>
+  <div id="toast" class="toast">✅ 操作成功</div>
+
+  <div id="poster">
+    <img class="bg" src="3.jpg" alt="background" />
+    <div class="avatarBox">
+      <img id="avatar" src="https://i.pravatar.cc/300?img=11" alt="avatar" />
+      <input type="file" id="upload" accept="image/*" />
     </div>
+    <div id="medalNumber" class="editable">1</div>
+    <div id="banner" class="editable">Congratulation</div>
+    <div id="userId" class="editable">8776843</div>
+    <div id="email" class="editable">ken****nne@gmail.com</div>
+    <div id="bonusText" class="editable">Upgrade Bonus</div>
+    <div id="level" class="editable">LV1</div>
+    <div id="reward" class="editable">50 USDT</div>
+  </div>
 
-    <!-- ==========================
-     工具栏
-========================== -->
+  <div class="toolbar">
+    <button id="changeAvatar">📷 上传头像</button>
+    <button id="copyImage" class="copy-btn">📋 复制图片</button>
+    <button id="download" class="download-btn">💾 导出PNG</button>
+  </div>
 
-    <div class="toolbar">
-      <button id="changeAvatar">📷 上传头像</button>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script>
+    (function () {
+      "use strict";
 
-      <button id="copyImage" class="copy-btn">📋 复制图片</button>
+      const poster = document.getElementById("poster");
+      const avatar = document.getElementById("avatar");
+      const upload = document.getElementById("upload");
+      const changeAvatar = document.getElementById("changeAvatar");
+      const copyButton = document.getElementById("copyImage");
+      const downloadButton = document.getElementById("download");
+      const toast = document.getElementById("toast");
+      const editableElements = document.querySelectorAll(".editable");
 
-      <button id="download" class="download-btn">💾 导出PNG</button>
-    </div>
+      let toastTimer;
+      function showToast(text) {
+        toast.textContent = text;
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 2000);
+      }
 
-    <script src="
-https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+      // 页面缩放
+      function fitPoster() {
+        const padding = 40;
+        const scaleX = (window.innerWidth - padding) / 1200;
+        const scaleY = (window.innerHeight - padding) / 700;
+        const scale = Math.min(scaleX, scaleY, 1);
+        poster.style.transform = `scale(${scale})`;
+      }
+      window.addEventListener("resize", fitPoster);
+      window.addEventListener("load", fitPoster);
+      fitPoster();
 
-    <script>
-      (function () {
-        "use strict";
+      // 双击编辑
+      editableElements.forEach((el) => {
+        el.addEventListener("dblclick", function () {
+          editableElements.forEach((other) => {
+            if (other !== this && other.contentEditable === "true") {
+              other.contentEditable = false;
+            }
+          });
+          this.contentEditable = true;
+          this.focus();
+          const range = document.createRange();
+          range.selectNodeContents(this);
+          const selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+        });
+        el.addEventListener("blur", function () {
+          this.contentEditable = false;
+        });
+        el.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") { e.preventDefault(); this.blur(); }
+        });
+      });
 
-        // ==========================
-        // DOM
-        // ==========================
+      // 自动保存
+      ["medalNumber","banner","userId","email","bonusText","level","reward"].forEach((id) => {
+        const el = document.getElementById(id);
+        const old = localStorage.getItem("cert_" + id);
+        if (old) el.textContent = old;
+        el.addEventListener("input", () => localStorage.setItem("cert_" + id, el.textContent));
+      });
 
-        const poster = document.getElementById("poster");
+      // 上传头像
+      changeAvatar.onclick = function () { upload.click(); };
+      upload.addEventListener("change", function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (!file.type.startsWith("image/")) { showToast("⚠️ 请上传图片"); return; }
+        const reader = new FileReader();
+        reader.onload = function (ev) { avatar.src = ev.target.result; showToast("✅ 头像更新成功"); };
+        reader.readAsDataURL(file);
+      });
 
-        const avatar = document.getElementById("avatar");
-
-        const upload = document.getElementById("upload");
-
-        const changeAvatar = document.getElementById("changeAvatar");
-
-        const copyButton = document.getElementById("copyImage");
-
-        const downloadButton = document.getElementById("download");
-
-        const toast = document.getElementById("toast");
-
-        const editableElements = document.querySelectorAll(".editable");
-
-        // ==========================
-        // Toast
-        // ==========================
-
-        let toastTimer;
-
-        function showToast(text) {
-          toast.textContent = text;
-
-          toast.classList.add("show");
-
-          clearTimeout(toastTimer);
-
-          toastTimer = setTimeout(() => {
-            toast.classList.remove("show");
-          }, 2000);
-        }
-
-        // ==========================
-        // 页面缩放
-        // ==========================
-
-        function fitPoster() {
-          const padding = 40;
-
-          const scaleX = (window.innerWidth - padding) / 1200;
-
-          const scaleY = (window.innerHeight - padding) / 700;
-
-          const scale = Math.min(scaleX, scaleY, 1);
-
-          poster.style.transform = `scale(${scale})`;
-        }
-
-        window.addEventListener("resize", fitPoster);
-
-        window.addEventListener("load", fitPoster);
-
-        fitPoster();
-
-        // ==========================
-        // 双击编辑文字
-        // ==========================
-
+      // ================================
+      // 截图核心函数 — 使用 onclone 而不是 cloneNode
+      // ================================
+      async function capturePoster() {
+        // 退出编辑状态
         editableElements.forEach((el) => {
-          el.addEventListener("dblclick", function () {
-            editableElements.forEach((other) => {
-              if (other !== this && other.contentEditable === "true") {
-                other.contentEditable = false;
-              }
-            });
-
-            this.contentEditable = true;
-
-            this.focus();
-
-            const range = document.createRange();
-
-            range.selectNodeContents(this);
-
-            const selection = window.getSelection();
-
-            selection.removeAllRanges();
-
-            selection.addRange(range);
-          });
-
-          el.addEventListener("blur", function () {
-            this.contentEditable = false;
-          });
-
-          el.addEventListener("keydown", function (e) {
-            if (e.key === "Enter") {
-              e.preventDefault();
-
-              this.blur();
-            }
-          });
+          if (el.contentEditable === "true") el.contentEditable = false;
         });
 
-        // ==========================
-        // 自动保存文字
-        // ==========================
+        // 保存原始样式
+        const savedTransform = poster.style.transform;
 
-        const saveKeys = [
-          "medalNumber",
-          "banner",
-          "userId",
-          "email",
-          "bonusText",
-          "level",
-          "reward",
-        ];
+        // 临时取消缩放，让 html2canvas 直接渲染真实尺寸
+        poster.style.transform = "none";
+        poster.style.position = "fixed";
+        poster.style.left = "0";
+        poster.style.top = "0";
+        poster.style.margin = "0";
 
-        saveKeys.forEach((id) => {
-          const el = document.getElementById(id);
+        // 强制重排
+        void poster.offsetHeight;
 
-          const old = localStorage.getItem("cert_" + id);
-
-          if (old) {
-            el.textContent = old;
-          }
-
-          el.addEventListener("input", () => {
-            localStorage.setItem(
-              "cert_" + id,
-
-              el.textContent,
-            );
-          });
-        });
-
-        // ==========================
-        // 上传头像
-        // ==========================
-
-        changeAvatar.onclick = function () {
-          upload.click();
-        };
-
-        upload.addEventListener("change", function (e) {
-          const file = e.target.files[0];
-
-          if (!file) return;
-
-          if (!file.type.startsWith("image/")) {
-            showToast("⚠️ 请上传图片");
-
-            return;
-          }
-
-          const reader = new FileReader();
-
-          reader.onload = function (ev) {
-            avatar.src = ev.target.result;
-
-            showToast("✅ 头像更新成功");
-          };
-
-          reader.readAsDataURL(file);
-        });
-
-        // ==========================
-        // clone独立截图核心函数
-        // ==========================
-
-        async function capturePoster() {
-          // 退出编辑状态
-
-          editableElements.forEach((el) => {
-            if (el.contentEditable === "true") {
-              el.contentEditable = false;
-            }
-          });
-
-          document.body.classList.add("exporting");
-
-          // 创建副本
-
-          const clone = poster.cloneNode(true);
-
-          // ==========================
-          // clone固定尺寸
-          // 不影响原页面
-          // ==========================
-
-          clone.style.position = "absolute";
-
-          clone.style.left = "0";
-
-          clone.style.top = "0";
-
-          clone.style.width = "1200px";
-
-          clone.style.height = "700px";
-
-          clone.style.transform = "none";
-
-          clone.style.margin = "0";
-
-          clone.style.zIndex = "-1";
-
-          // 去除编辑状态
-
-          const cloneEditables = clone.querySelectorAll(".editable");
-
-          cloneEditables.forEach((el) => {
-            el.removeAttribute("contenteditable");
-
-            el.style.outline = "none";
-
-            el.style.background = "transparent";
-          });
-
-          // 放入页面
-
-          document.body.appendChild(clone);
-
-          // 等待图片加载
-
-          const images = clone.querySelectorAll("img");
-
-          await Promise.all(
-            [...images].map((img) => {
-              if (img.complete) {
-                return Promise.resolve();
+        try {
+          const canvas = await html2canvas(poster, {
+            width: 1200,
+            height: 700,
+            x: 0,
+            y: 0,
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: null,
+            logging: false,
+            imageTimeout: 10000,
+            onclone: function (clonedDoc) {
+              // 确保 clone 中的元素有正确的尺寸
+              const clonedPoster = clonedDoc.getElementById("poster");
+              if (clonedPoster) {
+                clonedPoster.style.width = "1200px";
+                clonedPoster.style.height = "700px";
+                clonedPoster.style.transform = "none";
+                clonedPoster.style.position = "relative";
+                clonedPoster.style.left = "0";
+                clonedPoster.style.top = "0";
+                clonedPoster.style.overflow = "hidden";
               }
 
-              return new Promise((resolve) => {
-                img.onload = resolve;
+              // 清理所有文字元素，确保精确居中
+              const editables = clonedDoc.querySelectorAll(".editable");
+              const lineHeightMap = {
+                medalNumber: "90px",
+                banner: "45px",
+                userId: "30px",
+                email: "30px",
+                bonusText: "30px",
+                level: "50px",
+                reward: "50px",
+              };
 
-                img.onerror = resolve;
+              editables.forEach((el) => {
+                el.removeAttribute("contenteditable");
+                el.style.outline = "none";
+                el.style.background = "transparent";
+
+                const lh = lineHeightMap[el.id];
+                if (lh) {
+                  el.style.lineHeight = lh;
+                  el.style.textAlign = "center";
+                }
               });
-            }),
-          );
 
-          try {
-            const canvas = await html2canvas(clone, {
-              width: 1200,
+              // 清理背景
+              const bg = clonedDoc.querySelector(".bg");
+              if (bg) {
+                bg.style.position = "absolute";
+                bg.style.left = "0";
+                bg.style.top = "0";
+                bg.style.width = "1200px";
+                bg.style.height = "700px";
+              }
+            },
+          });
 
-              height: 700,
-
-              scale: 2,
-
-              useCORS: true,
-
-              allowTaint: true,
-
-              backgroundColor: null,
-
-              logging: false,
-
-              imageTimeout: 10000,
-            });
-
-            return canvas;
-          } finally {
-            // 删除截图副本
-
-            clone.remove();
-
-            document.body.classList.remove("exporting");
-          }
+          return canvas;
+        } finally {
+          // 恢复原始样式
+          poster.style.transform = savedTransform;
+          poster.style.position = "";
+          poster.style.left = "";
+          poster.style.top = "";
+          poster.style.margin = "";
         }
+      }
 
-        // ==========================
-        // 复制图片
-        // ==========================
-
-        copyButton.onclick = async function () {
-          const oldText = this.textContent;
-
-          this.textContent = "⏳ 生成中...";
-
-          this.disabled = true;
-
-          try {
-            const canvas = await capturePoster();
-
-            const blob = await new Promise((resolve) => {
-              canvas.toBlob(resolve, "image/png");
-            });
-
-            if (!blob) {
-              showToast("⚠️ 图片生成失败");
-
-              return;
-            }
-
-            await navigator.clipboard.write([
-              new ClipboardItem({
-                [blob.type]: blob,
-              }),
-            ]);
-
-            showToast("✅ 图片已复制");
-
-            this.textContent = "✅ 已复制";
-
-            setTimeout(() => {
-              this.textContent = oldText;
-            }, 1500);
-          } catch (err) {
-            console.error(err);
-
-            showToast("⚠️ 复制失败");
-
-            this.textContent = oldText;
-          } finally {
-            this.disabled = false;
-          }
-        };
-
-        // ==========================
-        // 导出PNG
-        // ==========================
-
-        downloadButton.onclick = async function () {
-          const oldText = this.textContent;
-
-          this.textContent = "⏳ 导出中...";
-
-          this.disabled = true;
-
-          try {
-            const canvas = await capturePoster();
-
-            const link = document.createElement("a");
-
-            link.download = "Axis_Agent_Certificate.png";
-
-            link.href = canvas.toDataURL("image/png", 1);
-
-            link.click();
-
-            showToast("✅ 导出成功");
-
-            this.textContent = "✅ 已导出";
-
-            setTimeout(() => {
-              this.textContent = oldText;
-            }, 1500);
-          } catch (err) {
-            console.error(err);
-
-            showToast("⚠️ 导出失败");
-
-            this.textContent = oldText;
-          } finally {
-            this.disabled = false;
-          }
-        };
-
-        // ==========================
-        // 快捷键
-        // ==========================
-
-        document.addEventListener("keydown", function (e) {
-          // Ctrl + Shift + C
-          if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "c") {
-            e.preventDefault();
-
-            copyButton.click();
-          }
-
-          // Ctrl + S
-
-          if (e.ctrlKey && e.key.toLowerCase() === "s") {
-            e.preventDefault();
-
-            downloadButton.click();
-          }
-        });
-
-        // ==========================
-        // 初始化提示
-        // ==========================
-
-        console.log("🎖 Axis Agent Certificate 已加载");
-
-        console.log("📋 Ctrl+Shift+C 复制图片");
-
-        console.log("💾 Ctrl+S 导出PNG");
-
-        console.log("✏️ 双击文字编辑");
-
-        if (typeof html2canvas === "undefined") {
-          showToast("⚠️ html2canvas加载失败");
+      // 复制图片
+      copyButton.onclick = async function () {
+        const oldText = this.textContent;
+        this.textContent = "⏳ 生成中...";
+        this.disabled = true;
+        try {
+          const canvas = await capturePoster();
+          const blob = await new Promise((resolve) => {
+            canvas.toBlob(resolve, "image/png");
+          });
+          if (!blob) { showToast("⚠️ 图片生成失败"); return; }
+          await navigator.clipboard.write([
+            new ClipboardItem({ [blob.type]: blob }),
+          ]);
+          showToast("✅ 图片已复制");
+          this.textContent = "✅ 已复制";
+          setTimeout(() => { this.textContent = oldText; }, 1500);
+        } catch (err) {
+          console.error(err);
+          showToast("⚠️ 复制失败");
+          this.textContent = oldText;
+        } finally {
+          this.disabled = false;
         }
-      })();
-    </script>
-  </body>
+      };
+
+      // 导出 PNG
+      downloadButton.onclick = async function () {
+        const oldText = this.textContent;
+        this.textContent = "⏳ 导出中...";
+        this.disabled = true;
+        try {
+          const canvas = await capturePoster();
+          const link = document.createElement("a");
+          link.download = "Axis_Agent_Certificate.png";
+          link.href = canvas.toDataURL("image/png", 1);
+          link.click();
+          showToast("✅ 导出成功");
+          this.textContent = "✅ 已导出";
+          setTimeout(() => { this.textContent = oldText; }, 1500);
+        } catch (err) {
+          console.error(err);
+          showToast("⚠️ 导出失败");
+          this.textContent = oldText;
+        } finally {
+          this.disabled = false;
+        }
+      };
+
+      // 快捷键
+      document.addEventListener("keydown", function (e) {
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "c") {
+          e.preventDefault();
+          copyButton.click();
+        }
+        if (e.ctrlKey && e.key.toLowerCase() === "s") {
+          e.preventDefault();
+          downloadButton.click();
+        }
+      });
+
+      console.log("🎖 Axis Agent Certificate 已加载");
+      console.log("📋 Ctrl+Shift+C 复制图片");
+      console.log("💾 Ctrl+S 导出PNG");
+      console.log("✏️ 双击文字编辑");
+
+      if (typeof html2canvas === "undefined") {
+        showToast("⚠️ html2canvas加载失败");
+      }
+    })();
+  </script>
+</body>
 </html>
