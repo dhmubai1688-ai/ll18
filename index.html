@@ -4,7 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Axis Agent · Certificate Platform</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+
     <style>
       * {
         margin: 0;
@@ -18,11 +23,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        font-family:
-          "Segoe UI",
-          system-ui,
-          -apple-system,
-          sans-serif;
+        font-family: "Rajdhani", sans-serif;
         padding: 5px;
       }
 
@@ -808,7 +809,7 @@
                 type="number"
                 class="coord-input"
                 id="levelX"
-                value="810"
+                value="825"
                 placeholder="X"
               />
             </div>
@@ -831,7 +832,7 @@
               <input
                 type="number"
                 id="levelSize"
-                value="44"
+                value="48"
                 min="10"
                 max="80"
               />
@@ -879,7 +880,7 @@
               <input
                 type="number"
                 id="rewardSize"
-                value="44"
+                value="48"
                 min="10"
                 max="80"
               />
@@ -937,14 +938,15 @@
               level: {
                 left: 890,
                 top: 555,
-                fontSize: 44,
+                fontSize: 48,
                 color: "#e2c376",
                 align: "left",
+                fontWeight: 800,
               },
               reward: {
                 left: 910,
                 top: 555,
-                fontSize: 44,
+                fontSize: 48,
                 color: "#e2c376",
                 align: "left",
               },
@@ -978,16 +980,16 @@
                 align: "left",
               },
               level: {
-                left: 810,
+                left: 825,
                 top: 555,
-                fontSize: 44,
+                fontSize: 48,
                 color: "#FFD700",
                 align: "left",
               },
               reward: {
                 left: 910,
                 top: 555,
-                fontSize: 44,
+                fontSize: 48,
                 color: "#FFD700",
                 align: "left",
               },
@@ -1021,16 +1023,16 @@
                 align: "left",
               },
               level: {
-                left: 810,
+                left: 825,
                 top: 555,
-                fontSize: 44,
+                fontSize: 48,
                 color: "#00d4ff",
                 align: "left",
               },
               reward: {
                 left: 910,
                 top: 555,
-                fontSize: 44,
+                fontSize: 48,
                 color: "#00d4ff",
                 align: "left",
               },
@@ -1241,7 +1243,7 @@
             fill: color,
             fontSize: fontSize,
             fontWeight: fontWeight,
-            fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif",
+            fontFamily: "'Rajdhani', sans-serif",
             textAlign: alignment.textAlign,
             originX: alignment.originX,
             originY: "center",
