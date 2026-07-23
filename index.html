@@ -91,7 +91,7 @@
       width: 100%;
       height: auto;
       max-width: 900px;
-      aspect-ratio: 1200 / 700;
+      aspect-ratio: 1200 / 600;
       cursor: default;
     }
 
@@ -545,8 +545,7 @@
   <div class="container">
     <!-- Canvas -->
     <div class="canvas-wrapper" id="canvasWrapper">
-      <canvas id="certificateCanvas" width="1200" height="700"></canvas>
-      <div class="edit-hint">🖱️ 拖拽移动 · 双击编辑</div>
+      <canvas id="certificateCanvas" width="1200" height="600"></canvas>
     </div>
 
     <!-- 控制面板 -->
@@ -614,10 +613,10 @@
             <input type="text" id="bannerInput" value="Congratulation" data-key="banner" />
           </div>
           <div class="panel-group tiny">
-            <input type="number" class="coord-input" id="bannerX" value="595" placeholder="X" />
+            <input type="number" class="coord-input" id="bannerX" value="593" placeholder="X" />
           </div>
           <div class="panel-group tiny">
-            <input type="number" class="coord-input" id="bannerY" value="542.5" placeholder="Y" step="0.5" />
+            <input type="number" class="coord-input" id="bannerY" value="541" placeholder="Y" step="0.5" />
           </div>
           <div class="panel-group tiny">
             <div class="color-picker-wrapper">
@@ -626,7 +625,7 @@
             </div>
           </div>
           <div class="panel-group tiny">
-            <input type="number" id="bannerSize" value="22" min="10" max="60" />
+            <input type="number" id="bannerSize" value="26" min="10" max="60" />
           </div>
         </div>
       </div>
@@ -984,7 +983,7 @@
 
       // ======================== Fabric ========================
       let canvasWidth = 1200;
-      let canvasHeight = 700;
+      let canvasHeight = 600;
 
       const canvas = new fabric.Canvas(canvasEl, {
         width: canvasWidth,
@@ -1178,7 +1177,7 @@
           left: 0,
           top: 0,
           width: 1200,
-          height: 700,
+          height: 600,
           fill: gradient,
           selectable: false,
           evented: false,
@@ -1247,37 +1246,6 @@
         objects.medal = medal;
         canvas.add(medal);
 
-        // 标题背景横幅
-        const bannerBg = new fabric.Rect({
-          left: 468 * (canvasWidth / 1200),
-          top: 519 * (canvasHeight / 700),
-          width: 260 * (canvasWidth / 1200),
-          height: 45 * (canvasHeight / 700),
-          rx: 30 * (canvasWidth / 1200),
-          ry: 30 * (canvasHeight / 700),
-          fill: new fabric.Gradient({
-            type: "linear",
-            coords: { x1: 0, y1: 0, x2: 0, y2: 1 },
-            colorStops: [
-              { offset: 0, color: "#b8860b" },
-              { offset: 0.5, color: "#ffe9a8" },
-              { offset: 1, color: "#b8860b" },
-            ],
-          }),
-          selectable: false,
-          evented: false,
-          originX: "left",
-          originY: "top",
-          shadow: new fabric.Shadow({
-            color: "rgba(184,134,11,0.3)",
-            blur: 12,
-            offsetX: 0,
-            offsetY: 2,
-          }),
-        });
-        objects.bannerBg = bannerBg;
-        canvas.add(bannerBg);
-
         const bannerText = new fabric.Text(bannerVal, {
           left: elems.banner.left,
           top: elems.banner.top,
@@ -1327,7 +1295,7 @@
           ...getTextStyle(
             elems.bonus.color,
             elems.bonus.fontSize,
-            "700",
+            "600",
             elems.bonus.align || "left",
           ),
         });
@@ -1362,6 +1330,53 @@
 
         enableDragging();
         canvas.renderAll();
+      }
+
+      // ======================== U 形文字函数 ========================
+      function createUText(text, cx, cy, radius, fontSize, color, fontFamily = "'Rajdhani', sans-serif") {
+        const chars = text.split('');
+        const count = chars.length;
+        const totalWidth = radius * 1.6;  // 总宽度
+
+        const group = new fabric.Group([], {
+          left: cx,
+          top: cy,
+          originX: 'center',
+          originY: 'center',
+          selectable: true,
+          evented: true,
+          cursor: 'move',
+        });
+
+        chars.forEach((char, index) => {
+          // X: 均匀分布，两端在水平线上
+          const t = count > 1 ? index / (count - 1) : 0.5;
+          const x = (t - 0.5) * totalWidth;
+
+          // Y: 中间下沉，两端在 y=0
+          const depth = radius * 0.35;  // 下沉深度
+          const y = depth * 4 * (t - 0.5) * (t - 0.5);
+
+          // 角度：两端稍微向内倾斜
+          const angle = -12 * (t - 0.5) * 2;
+
+          const textChar = new fabric.Text(char, {
+            left: x,
+            top: y,
+            fontSize: fontSize,
+            fontWeight: 900,
+            fill: color,
+            fontFamily: fontFamily,
+            originX: 'center',
+            originY: 'center',
+            angle: angle,
+            selectable: false,
+            evented: false,
+          });
+          group.add(textChar);
+        });
+
+        return group;
       }
 
       function updateTemplateFromUI(templateName) {
@@ -1408,15 +1423,15 @@
       function buildAvatar(url, template) {
         // ===== 获取画布实际尺寸 =====
         const canvasWidth = canvas.width || 1200;
-        const canvasHeight = canvas.height || 700;
+        const canvasHeight = canvas.height || 600;
 
         // 设计稿尺寸
         const DESIGN_WIDTH = 1200;
-        const DESIGN_HEIGHT = 700;
+        const DESIGN_HEIGHT = 600;
 
         // 头像在设计稿中的位置（460, 194）和半径 138
         const AVATAR_LEFT = 460;
-        const AVATAR_TOP = 196;
+        const AVATAR_TOP = 148;
         const AVATAR_RADIUS = 138;
 
         // 计算缩放比例（使用画布实际尺寸）
