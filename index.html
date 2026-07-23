@@ -12,7 +12,8 @@
     rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap"
     rel="stylesheet" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js">
+  </script>
 
   <style>
     * {
@@ -51,6 +52,7 @@
     .header-actions {
       display: flex;
       gap: 10px;
+      flex-wrap: wrap;
     }
 
     .header-actions .btn {
@@ -395,6 +397,7 @@
       display: flex;
       gap: 6px;
       margin-bottom: 10px;
+      flex-wrap: wrap;
     }
 
     .template-btn {
@@ -457,6 +460,18 @@
       color: #aaa;
       font-weight: 500;
       min-width: 30px;
+    }
+
+    /* 加载状态占位 */
+    .canvas-placeholder {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: rgba(255, 255, 255, 0.2);
+      font-size: 14px;
+      letter-spacing: 2px;
+      pointer-events: none;
     }
 
     @media (max-width: 860px) {
@@ -529,8 +544,9 @@
 
   <div class="container">
     <!-- Canvas -->
-    <div class="canvas-wrapper">
+    <div class="canvas-wrapper" id="canvasWrapper">
       <canvas id="certificateCanvas" width="1200" height="700"></canvas>
+      <div class="edit-hint">🖱️ 拖拽移动 · 双击编辑</div>
     </div>
 
     <!-- 控制面板 -->
@@ -576,7 +592,7 @@
             <input type="number" class="coord-input" id="medalX" value="365" placeholder="X" />
           </div>
           <div class="panel-group tiny">
-            <input type="number" class="coord-input" id="medalY" value="314" placeholder="Y" />
+            <input type="number" class="coord-input" id="medalY" value="364" placeholder="Y" />
           </div>
           <div class="panel-group tiny">
             <div class="color-picker-wrapper">
@@ -601,7 +617,7 @@
             <input type="number" class="coord-input" id="bannerX" value="595" placeholder="X" />
           </div>
           <div class="panel-group tiny">
-            <input type="number" class="coord-input" id="bannerY" value="475.5" placeholder="Y" step="0.5" />
+            <input type="number" class="coord-input" id="bannerY" value="542.5" placeholder="Y" step="0.5" />
           </div>
           <div class="panel-group tiny">
             <div class="color-picker-wrapper">
@@ -626,7 +642,7 @@
             <input type="number" class="coord-input" id="userIdX" value="895" placeholder="X" />
           </div>
           <div class="panel-group tiny">
-            <input type="number" class="coord-input" id="userIdY" value="370" placeholder="Y" />
+            <input type="number" class="coord-input" id="userIdY" value="420" placeholder="Y" />
           </div>
           <div class="panel-group tiny">
             <div class="color-picker-wrapper">
@@ -651,7 +667,7 @@
             <input type="number" class="coord-input" id="emailX" value="895" placeholder="X" />
           </div>
           <div class="panel-group tiny">
-            <input type="number" class="coord-input" id="emailY" value="410" placeholder="Y" />
+            <input type="number" class="coord-input" id="emailY" value="468" placeholder="Y" />
           </div>
           <div class="panel-group tiny">
             <div class="color-picker-wrapper">
@@ -676,7 +692,7 @@
             <input type="number" class="coord-input" id="bonusX" value="895" placeholder="X" />
           </div>
           <div class="panel-group tiny">
-            <input type="number" class="coord-input" id="bonusY" value="454" placeholder="Y" />
+            <input type="number" class="coord-input" id="bonusY" value="520" placeholder="Y" />
           </div>
           <div class="panel-group tiny">
             <div class="color-picker-wrapper">
@@ -701,7 +717,7 @@
             <input type="number" class="coord-input" id="levelX" value="825" placeholder="X" />
           </div>
           <div class="panel-group tiny">
-            <input type="number" class="coord-input" id="levelY" value="530" placeholder="Y" />
+            <input type="number" class="coord-input" id="levelY" value="603" placeholder="Y" />
           </div>
           <div class="panel-group tiny">
             <div class="color-picker-wrapper">
@@ -726,7 +742,7 @@
             <input type="number" class="coord-input" id="rewardX" value="910" placeholder="X" />
           </div>
           <div class="panel-group tiny">
-            <input type="number" class="coord-input" id="rewardY" value="530" placeholder="Y" />
+            <input type="number" class="coord-input" id="rewardY" value="603" placeholder="Y" />
           </div>
           <div class="panel-group tiny">
             <div class="color-picker-wrapper">
@@ -808,6 +824,7 @@
 
       // ======================== DOM ========================
       const canvasEl = document.getElementById("certificateCanvas");
+      const canvasWrapper = document.getElementById("canvasWrapper");
       const toast = document.getElementById("toast");
 
       // 内容输入框
@@ -879,6 +896,7 @@
       let currentTemplate = "default";
       let currentAvatarUrl = "https://i.pravatar.cc/300?img=11";
       let currentBgUrl = "3.jpg";
+      let isFirstLoad = true;
 
       // 配置映射：每个元素对应的所有控件
       const elementConfig = {
@@ -965,7 +983,6 @@
       }
 
       // ======================== Fabric ========================
-      // 动态画布尺寸
       let canvasWidth = 1200;
       let canvasHeight = 700;
 
@@ -992,6 +1009,44 @@
         level: null,
         reward: null,
       };
+
+      // ======================== 自适应 ========================
+      function fitCanvas() {
+        const wrapperWidth = canvasWrapper.clientWidth - 24;
+        const maxWidth = Math.min(wrapperWidth, 1000);
+        const ratio = canvasWidth / canvasHeight;
+        const displayWidth = Math.max(300, maxWidth);
+        const displayHeight = displayWidth / ratio;
+
+        canvasEl.style.width = displayWidth + "px";
+        canvasEl.style.height = displayHeight + "px";
+
+        console.log(`📐 自适应: ${displayWidth.toFixed(0)}x${displayHeight.toFixed(0)}`);
+      }
+
+      // 使用 requestAnimationFrame 确保 DOM 渲染完成
+      function scheduleFitCanvas(delay = 0) {
+        if (delay > 0) {
+          setTimeout(() => {
+            requestAnimationFrame(fitCanvas);
+          }, delay);
+        } else {
+          requestAnimationFrame(fitCanvas);
+        }
+      }
+
+      // 使用 MutationObserver 监听容器尺寸变化
+      let resizeObserver = null;
+
+      function setupResizeObserver() {
+        if (window.ResizeObserver) {
+          resizeObserver = new ResizeObserver(() => {
+            fitCanvas();
+          });
+          resizeObserver.observe(canvasWrapper);
+        }
+        window.addEventListener("resize", fitCanvas);
+      }
 
       // ======================== 构建证书 ========================
       let isBuilding = false;
@@ -1039,26 +1094,50 @@
 
         canvas.clear();
 
+        // 先渲染文字层（不依赖背景）
+        buildTextLayers(template);
+
+        // 然后加载背景图
+        const bgUrl = currentBgUrl || template.bgImage || "3.jpg";
+
+        // 如果背景图是 "3.jpg" 且可能加载失败，先用渐变色占位
+        if (bgUrl === "3.jpg" || bgUrl.includes("3.jpg")) {
+          // 尝试加载，失败则用渐变
+          loadBackgroundWithFallback(bgUrl, template);
+        } else {
+          loadBackgroundWithFallback(bgUrl, template);
+        }
+
+        // 头像总是加载
+        buildAvatar(currentAvatarUrl, template);
+
+        // 安排自适应（多次尝试确保成功）
+        scheduleFitCanvas(50);
+        scheduleFitCanvas(200);
+        scheduleFitCanvas(500);
+
+        setTimeout(() => {
+          isBuilding = false;
+        }, 1000);
+      }
+
+      function loadBackgroundWithFallback(url, template) {
         fabric.Image.fromURL(
-          currentBgUrl || template.bgImage || "3.jpg",
+          url,
           (img) => {
             if (img) {
-              // 关键：让画布尺寸适应背景图比例
               const bgRatio = img.width / img.height;
               const targetWidth = 1200;
               const targetHeight = Math.round(targetWidth / bgRatio);
 
-              // 更新画布尺寸
               canvasWidth = targetWidth;
               canvasHeight = targetHeight;
               canvas.setWidth(canvasWidth);
               canvas.setHeight(canvasHeight);
 
-              // 更新 canvas 元素尺寸（显示）
               canvasEl.width = canvasWidth;
               canvasEl.height = canvasHeight;
 
-              // 背景图直接铺满
               img.set({
                 left: 0,
                 top: 0,
@@ -1073,236 +1152,51 @@
               objects.bg = img;
               canvas.add(img);
               canvas.sendToBack(img);
-            }
-            buildLayers(template);
-          },
-          { crossOrigin: "anonymous" },
-        );
-
-        setTimeout(() => {
-          if (!objects.bg) {
-            buildLayers(template);
-          }
-        }, 3000);
-      }
-
-      function buildLayers(template) {
-        // 重新计算元素位置（按比例缩放）
-        const scaleX = canvasWidth / 1200;
-        const scaleY = canvasHeight / 700;
-
-        // 更新模板中的位置
-        const scaledTemplate = scaleTemplatePositions(
-          template,
-          scaleX,
-          scaleY,
-        );
-
-        buildTextLayers(scaledTemplate);
-        buildAvatar(currentAvatarUrl, scaledTemplate);
-
-        if (objects.bg) {
-          canvas.sendToBack(objects.bg);
-        }
-        if (objects.avatar) {
-          canvas.bringToFront(objects.avatar);
-        }
-        if (objects.avatarBorder) {
-          canvas.bringToFront(objects.avatarBorder);
-        }
-        if (objects.avatarGlow) {
-          canvas.bringToFront(objects.avatarGlow);
-        }
-
-        canvas.renderAll();
-        isBuilding = false;
-      }
-
-      // 按比例缩放元素位置
-      function scaleTemplatePositions(template, scaleX, scaleY) {
-        const scaled = JSON.parse(JSON.stringify(template));
-        const keys = [
-          "medal",
-          "banner",
-          "userId",
-          "email",
-          "bonus",
-          "level",
-          "reward",
-        ];
-        keys.forEach((key) => {
-          if (scaled.elements[key]) {
-            scaled.elements[key].left = Math.round(
-              scaled.elements[key].left * scaleX,
-            );
-            scaled.elements[key].top = Math.round(
-              scaled.elements[key].top * scaleY,
-            );
-            scaled.elements[key].fontSize = Math.round(
-              scaled.elements[key].fontSize * Math.min(scaleX, scaleY),
-            );
-          }
-        });
-        return scaled;
-      }
-
-      // ======================== 从UI更新模板 ========================
-      function updateTemplateFromUI(templateName) {
-        const template = TEMPLATES[templateName];
-        if (!template) return;
-
-        const keys = [
-          "medal",
-          "banner",
-          "userId",
-          "email",
-          "bonus",
-          "level",
-          "reward",
-        ];
-        keys.forEach((key) => {
-          if (template.elements[key]) {
-            const config = elementConfig[key];
-            if (config) {
-              const x =
-                parseFloat(config.xInput.value) ||
-                template.elements[key].left;
-              const y =
-                parseFloat(config.yInput.value) || template.elements[key].top;
-              const color = config.colorInput.value;
-              const size =
-                parseInt(config.sizeInput.value) ||
-                template.elements[key].fontSize;
-
-              template.elements[key].left = x;
-              template.elements[key].top = y;
-              template.elements[key].color = color;
-              template.elements[key].fontSize = size;
-
-              if (config.colorHex) {
-                config.colorHex.textContent = color;
-              }
-            }
-          }
-        });
-      }
-
-      // ======================== 头像构建 ========================
-      function buildAvatar(url, template) {
-        const avatarRadius = Math.min(
-          138 * (canvasWidth / 1200),
-          138 * (canvasHeight / 700),
-        );
-        const centerX = (460 + 138) * (canvasWidth / 1200);
-        const centerY = (194 + 138) * (canvasHeight / 700);
-
-        if (objects.avatar) {
-          canvas.remove(objects.avatar);
-          objects.avatar = null;
-        }
-        if (objects.avatarBorder) {
-          canvas.remove(objects.avatarBorder);
-          objects.avatarBorder = null;
-        }
-        if (objects.avatarGlow) {
-          canvas.remove(objects.avatarGlow);
-          objects.avatarGlow = null;
-        }
-
-        fabric.Image.fromURL(
-          url,
-          (img) => {
-            if (img) {
-              const scaleX = (avatarRadius * 2) / img.width;
-              const scaleY = (avatarRadius * 2) / img.height;
-              const scale = Math.max(scaleX, scaleY);
-
-              const clipPath = new fabric.Circle({
-                radius: avatarRadius,
-                left: centerX - avatarRadius,
-                top: centerY - avatarRadius,
-                originX: "left",
-                originY: "top",
-                absolutePositioned: true,
-              });
-
-              const scaledWidth = img.width * scale;
-              const scaledHeight = img.height * scale;
-              const offsetX = (scaledWidth - avatarRadius * 2) / 2;
-              const offsetY = (scaledHeight - avatarRadius * 2) / 2;
-
-              img.set({
-                left: centerX - avatarRadius - offsetX,
-                top: centerY - avatarRadius - offsetY,
-                scaleX: scale,
-                scaleY: scale,
-                originX: "left",
-                originY: "top",
-                clipPath: clipPath,
-                selectable: false,
-                evented: false,
-                crossOrigin: "anonymous",
-              });
-
-              objects.avatar = img;
-              canvas.add(img);
-
-              const border = new fabric.Circle({
-                radius: avatarRadius + 3,
-                left: centerX,
-                top: centerY,
-                originX: "center",
-                originY: "center",
-                fill: "transparent",
-                stroke: "#eedd99",
-                strokeWidth: 5 * (canvasWidth / 1200),
-                selectable: false,
-                evented: false,
-                shadow: new fabric.Shadow({
-                  color: "rgba(255,215,100,0.1)",
-                  blur: 25,
-                  offsetX: 0,
-                  offsetY: 0,
-                }),
-              });
-              objects.avatarBorder = border;
-              canvas.add(border);
-
-              const glow = new fabric.Circle({
-                radius: avatarRadius + 12,
-                left: centerX,
-                top: centerY,
-                originX: "center",
-                originY: "center",
-                fill: "transparent",
-                stroke: "rgba(255,215,100,0.1)",
-                strokeWidth: 3 * (canvasWidth / 1200),
-                selectable: false,
-                evented: false,
-              });
-              objects.avatarGlow = glow;
-              canvas.add(glow);
-
-              if (objects.avatar) {
-                canvas.bringToFront(objects.avatar);
-              }
-              if (objects.avatarBorder) {
-                canvas.bringToFront(objects.avatarBorder);
-              }
-              if (objects.avatarGlow) {
-                canvas.bringToFront(objects.avatarGlow);
-              }
-
               canvas.renderAll();
+              scheduleFitCanvas();
             } else {
-              if (url !== "https://i.pravatar.cc/300?img=11") {
-                currentAvatarUrl = "https://i.pravatar.cc/300?img=11";
-                buildAvatar(currentAvatarUrl, template);
-              }
+              // 背景加载失败，使用渐变填充
+              useFallbackBackground(template);
             }
-          },
-          { crossOrigin: "anonymous" },
+          }, { crossOrigin: "anonymous" }
         );
+      }
+
+      function useFallbackBackground(template) {
+        // 创建一个渐变背景作为后备
+        const gradient = new fabric.Gradient({
+          type: "linear",
+          coords: { x1: 0, y1: 0, x2: 1, y2: 1 },
+          colorStops: [
+            { offset: 0, color: "#1a0a2e" },
+            { offset: 0.5, color: "#16213e" },
+            { offset: 1, color: "#0f3460" },
+          ],
+        });
+
+        const bgRect = new fabric.Rect({
+          left: 0,
+          top: 0,
+          width: 1200,
+          height: 700,
+          fill: gradient,
+          selectable: false,
+          evented: false,
+          originX: "left",
+          originY: "top",
+        });
+
+        objects.bg = bgRect;
+        canvas.add(bgRect);
+        canvas.sendToBack(bgRect);
+        canvas.renderAll();
+
+        // 重新应用文字层（确保在背景之上）
+        const templateData = TEMPLATES[currentTemplate] || TEMPLATES.default;
+        // 文字层已经在 buildTextLayers 中添加了，但可能被清除
+        // 确保文字在最上层
+        canvas.renderAll();
+        scheduleFitCanvas();
       }
 
       function buildTextLayers(template) {
@@ -1356,7 +1250,7 @@
         // 标题背景横幅
         const bannerBg = new fabric.Rect({
           left: 468 * (canvasWidth / 1200),
-          top: 449 * (canvasHeight / 700),
+          top: 519 * (canvasHeight / 700),
           width: 260 * (canvasWidth / 1200),
           height: 45 * (canvasHeight / 700),
           rx: 30 * (canvasWidth / 1200),
@@ -1470,6 +1364,191 @@
         canvas.renderAll();
       }
 
+      function updateTemplateFromUI(templateName) {
+        const template = TEMPLATES[templateName];
+        if (!template) return;
+
+        const keys = [
+          "medal",
+          "banner",
+          "userId",
+          "email",
+          "bonus",
+          "level",
+          "reward",
+        ];
+        keys.forEach((key) => {
+          if (template.elements[key]) {
+            const config = elementConfig[key];
+            if (config) {
+              const x =
+                parseFloat(config.xInput.value) ||
+                template.elements[key].left;
+              const y =
+                parseFloat(config.yInput.value) || template.elements[key].top;
+              const color = config.colorInput.value;
+              const size =
+                parseInt(config.sizeInput.value) ||
+                template.elements[key].fontSize;
+
+              template.elements[key].left = x;
+              template.elements[key].top = y;
+              template.elements[key].color = color;
+              template.elements[key].fontSize = size;
+
+              if (config.colorHex) {
+                config.colorHex.textContent = color;
+              }
+            }
+          }
+        });
+      }
+
+      // ======================== 头像构建 ========================
+      function buildAvatar(url, template) {
+        // ===== 获取画布实际尺寸 =====
+        const canvasWidth = canvas.width || 1200;
+        const canvasHeight = canvas.height || 700;
+
+        // 设计稿尺寸
+        const DESIGN_WIDTH = 1200;
+        const DESIGN_HEIGHT = 700;
+
+        // 头像在设计稿中的位置（460, 194）和半径 138
+        const AVATAR_LEFT = 460;
+        const AVATAR_TOP = 196;
+        const AVATAR_RADIUS = 138;
+
+        // 计算缩放比例（使用画布实际尺寸）
+        const scaleX = canvasWidth / DESIGN_WIDTH;
+        const scaleY = canvasHeight / DESIGN_HEIGHT;
+        const scale = Math.min(scaleX, scaleY);
+
+        // 计算实际位置（使用画布实际尺寸）
+        const avatarRadius = AVATAR_RADIUS * scale;
+        const centerX = (AVATAR_LEFT + AVATAR_RADIUS) * scaleX;
+        const centerY = (AVATAR_TOP + AVATAR_RADIUS) * scaleY;
+
+        console.log(`📐 头像缩放: 设计稿(1200x700) → 实际(${canvasWidth}x${canvasHeight}), scale=${scale.toFixed(3)}`);
+
+        if (objects.avatar) {
+          canvas.remove(objects.avatar);
+          objects.avatar = null;
+        }
+        if (objects.avatarBorder) {
+          canvas.remove(objects.avatarBorder);
+          objects.avatarBorder = null;
+        }
+        if (objects.avatarGlow) {
+          canvas.remove(objects.avatarGlow);
+          objects.avatarGlow = null;
+        }
+
+        fabric.Image.fromURL(
+          url,
+          (img) => {
+            if (img) {
+              const scaleXImg = (avatarRadius * 2) / img.width;
+              const scaleYImg = (avatarRadius * 2) / img.height;
+              const scale = Math.max(scaleXImg, scaleYImg);
+
+              const clipPath = new fabric.Circle({
+                radius: avatarRadius,
+                left: centerX - avatarRadius,
+                top: centerY - avatarRadius,
+                originX: "left",
+                originY: "top",
+                absolutePositioned: true,
+              });
+
+              const scaledWidth = img.width * scale;
+              const scaledHeight = img.height * scale;
+              const offsetX = (scaledWidth - avatarRadius * 2) / 2;
+              const offsetY = (scaledHeight - avatarRadius * 2) / 2;
+
+              img.set({
+                left: centerX - avatarRadius - offsetX,
+                top: centerY - avatarRadius - offsetY,
+                scaleX: scale,
+                scaleY: scale,
+                originX: "left",
+                originY: "top",
+                clipPath: clipPath,
+                selectable: false,
+                evented: false,
+                crossOrigin: "anonymous",
+              });
+
+              objects.avatar = img;
+              canvas.add(img);
+
+              // 边框
+              const border = new fabric.Circle({
+                radius: avatarRadius + 3,
+                left: centerX,
+                top: centerY,
+                originX: "center",
+                originY: "center",
+                fill: "transparent",
+                stroke: "#eedd99",
+                strokeWidth: 5 * scale,
+                selectable: false,
+                evented: false,
+                shadow: new fabric.Shadow({
+                  color: "rgba(255,215,100,0.1)",
+                  blur: 25,
+                  offsetX: 0,
+                  offsetY: 0,
+                }),
+              });
+              objects.avatarBorder = border;
+              canvas.add(border);
+
+              // 金色光圈（增强效果）
+              const glow = new fabric.Circle({
+                radius: avatarRadius + 15,
+                left: centerX,
+                top: centerY,
+                originX: "center",
+                originY: "center",
+                fill: "transparent",
+                stroke: "rgba(255,215,0,0.25)",
+                strokeWidth: 4 * scale,
+                selectable: false,
+                evented: false,
+                shadow: new fabric.Shadow({
+                  color: "rgba(255,215,0,0.3)",
+                  blur: 20,
+                  offsetX: 0,
+                  offsetY: 0,
+                }),
+              });
+              objects.avatarGlow = glow;
+              canvas.add(glow);
+
+              // 确保头像在边框上方
+              if (objects.avatar) {
+                canvas.bringToFront(objects.avatar);
+              }
+              if (objects.avatarBorder) {
+                canvas.bringToFront(objects.avatarBorder);
+              }
+              if (objects.avatarGlow) {
+                canvas.bringToFront(objects.avatarGlow);
+              }
+
+              canvas.renderAll();
+            } else {
+              if (url !== "https://i.pravatar.cc/300?img=11") {
+                currentAvatarUrl = "https://i.pravatar.cc/300?img=11";
+                buildAvatar(currentAvatarUrl, template);
+              }
+            }
+          },
+          { crossOrigin: "anonymous" },
+        );
+      }
+
       // ======================== 启用拖拽 ========================
       function enableDragging() {
         const textObjects = [
@@ -1570,25 +1649,25 @@
       }
 
       medalInput.addEventListener("input", () =>
-        updateText("medal", medalInput.value),
+        updateText("medal", medalInput.value)
       );
       bannerInput.addEventListener("input", () =>
-        updateText("banner", bannerInput.value),
+        updateText("banner", bannerInput.value)
       );
       userIdInput.addEventListener("input", () =>
-        updateText("userId", userIdInput.value),
+        updateText("userId", userIdInput.value)
       );
       emailInput.addEventListener("input", () =>
-        updateText("email", emailInput.value),
+        updateText("email", emailInput.value)
       );
       bonusInput.addEventListener("input", () =>
-        updateText("bonus", bonusInput.value),
+        updateText("bonus", bonusInput.value)
       );
       levelInput.addEventListener("input", () =>
-        updateText("level", levelInput.value),
+        updateText("level", levelInput.value)
       );
       rewardInput.addEventListener("input", () =>
-        updateText("reward", rewardInput.value),
+        updateText("reward", rewardInput.value)
       );
 
       // ======================== 更新样式 ========================
@@ -1631,10 +1710,10 @@
         config.xInput.addEventListener("input", () => updateTextStyle(key));
         config.yInput.addEventListener("input", () => updateTextStyle(key));
         config.colorInput.addEventListener("input", () =>
-          updateTextStyle(key),
+          updateTextStyle(key)
         );
         config.sizeInput.addEventListener("input", () =>
-          updateTextStyle(key),
+          updateTextStyle(key)
         );
 
         if (config.colorHex) {
@@ -1812,7 +1891,7 @@
 
       // ======================== 加载模板 ========================
       loadTemplateBtn.addEventListener("click", () =>
-        templateFileInput.click(),
+        templateFileInput.click()
       );
 
       templateFileInput.addEventListener("change", function (e) {
@@ -1865,7 +1944,7 @@
               .querySelectorAll(".template-btn")
               .forEach((b) => b.classList.remove("active"));
             const existing = container.querySelector(
-              '[data-template="custom"]',
+              '[data-template="custom"]'
             );
             if (existing) {
               existing.remove();
@@ -1900,7 +1979,7 @@
             if (b.dataset.template === "default") b.classList.add("active");
           });
           const customBtn = document.querySelector(
-            '[data-template="custom"]',
+            '[data-template="custom"]'
           );
           if (customBtn) customBtn.remove();
           delete TEMPLATES["custom"];
@@ -2020,34 +2099,46 @@
         }
       });
 
-      // ======================== 自适应 ========================
-      function fitCanvas() {
-        const wrapper = canvasEl.parentElement;
-        const wrapperWidth = wrapper.clientWidth - 24;
-        const maxWidth = Math.min(wrapperWidth, 1000);
-        const ratio = canvasWidth / canvasHeight;
-        const displayWidth = Math.max(300, maxWidth);
-        const displayHeight = displayWidth / ratio;
+      // ======================== 启动 ========================
+      // 关键修复：使用多个延迟和 RAF 确保首次加载自适应成功
+      function init() {
+        buildCertificate("default");
 
-        canvasEl.style.width = displayWidth + "px";
-        canvasEl.style.height = displayHeight + "px";
+        // 多次尝试自适应，确保首次加载成功
+        setTimeout(() => {
+          requestAnimationFrame(fitCanvas);
+        }, 100);
+
+        setTimeout(() => {
+          requestAnimationFrame(fitCanvas);
+        }, 300);
+
+        setTimeout(() => {
+          requestAnimationFrame(fitCanvas);
+        }, 600);
+
+        setTimeout(() => {
+          requestAnimationFrame(fitCanvas);
+        }, 1000);
+
+        // 设置 ResizeObserver
+        setupResizeObserver();
+
+        console.log("🎨 Axis Certificate Platform ready!");
       }
 
-      window.addEventListener("resize", fitCanvas);
+      // DOM 完全加载后初始化
+      if (document.readyState === "complete") {
+        init();
+      } else {
+        window.addEventListener("load", init);
+      }
 
-      // ======================== 启动 ========================
-      buildCertificate("default");
-      setTimeout(fitCanvas, 200);
+      // 额外保险：页面完全加载后再次尝试
+      window.addEventListener("pageshow", function () {
+        setTimeout(fitCanvas, 200);
+      });
 
-      console.log("🎨 Axis Certificate Platform ready!");
-      console.log("💡 功能：");
-      console.log("  - 拖拽移动位置（坐标自动同步）");
-      console.log("  - 坐标输入框精确调整位置");
-      console.log("  - 颜色选择器调整文字颜色");
-      console.log("  - 数字输入调整文字大小");
-      console.log("  - 保存/加载模板 JSON");
-      console.log("  - 上传自定义头像（自动填满圆形）");
-      console.log("  - 背景自动适配比例，无黑边无裁剪");
     })();
   </script>
 </body>
