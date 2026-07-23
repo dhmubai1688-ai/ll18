@@ -1,0 +1,2146 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>图片编辑</title>
+  <link rel="icon" href="https://raw.githubusercontent.com/dh1888/dh18/main/ico/DHPG.png" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js">
+  </script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0b0b0b;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: "Rajdhani", sans-serif;
+      padding: 5px;
+    }
+
+    .header {
+      width: 100%;
+      max-width: 1500px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2px 0;
+      margin-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .header h1 {
+      color: #ffd978;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .header-actions .btn {
+      padding: 4px 12px;
+      font-size: 13px;
+    }
+
+    .container {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      max-width: 1500px;
+      width: 100%;
+    }
+
+    .canvas-wrapper {
+      background: #1a1a1a;
+      border-radius: 16px;
+      padding: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+      flex-shrink: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      flex: 1;
+      min-width: 300px;
+    }
+
+    #certificateCanvas {
+      display: block;
+      border-radius: 8px;
+      background: #1a1a1a;
+      width: 100%;
+      height: auto;
+      max-width: 900px;
+      aspect-ratio: 1200 / 700;
+      cursor: default;
+    }
+
+    .edit-hint {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      padding: 6px 16px;
+      border-radius: 20px;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 12px;
+      pointer-events: none;
+      transition: 0.3s;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .canvas-wrapper:hover .edit-hint {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 10px 14px;
+      min-width: 300px;
+      max-width: 500px;
+      flex: 1;
+      color: #e0e0e0;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .panel::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .panel::-webkit-scrollbar-thumb {
+      background: rgba(255, 215, 120, 0.3);
+      border-radius: 4px;
+    }
+
+    .panel h2 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 14px;
+      color: #ffd978;
+      letter-spacing: 0.5px;
+    }
+
+    .panel-group {
+      margin-bottom: 10px;
+    }
+
+    .panel-group label {
+      display: block;
+      font-size: 10px;
+      font-weight: 500;
+      color: #aaa;
+      margin-bottom: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .panel-group input,
+    .panel-group select {
+      width: 100%;
+      padding: 5px 10px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      color: #fff;
+      font-size: 13px;
+      transition: 0.2s;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .panel-group input:focus,
+    .panel-group select:focus {
+      border-color: #ffd978;
+      background: rgba(255, 215, 120, 0.05);
+    }
+
+    .panel-group input.highlight {
+      border-color: #ffd978;
+      box-shadow: 0 0 20px rgba(255, 215, 120, 0.15);
+    }
+
+    .panel-group select option {
+      background: #1a1a1a;
+      color: #fff;
+    }
+
+    .panel-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .panel-row .panel-group {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    .panel-row .panel-group.small {
+      flex: 0.6;
+    }
+
+    .panel-row .panel-group.tiny {
+      flex: 0.4;
+    }
+
+    .color-picker-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .color-picker-wrapper input[type="color"] {
+      width: 32px;
+      height: 28px;
+      padding: 1px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      background: transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .color-picker-wrapper input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 1px;
+    }
+
+    .color-picker-wrapper input[type="color"]::-webkit-color-swatch {
+      border: none;
+      border-radius: 3px;
+    }
+
+    .color-hex {
+      font-size: 11px;
+      color: #888;
+      font-family: monospace;
+      min-width: 50px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      color: #fff;
+      flex: 1;
+      min-width: 100px;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #b8860b, #ffd978);
+      color: #111;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(184, 134, 11, 0.4);
+    }
+
+    .btn-success {
+      background: #28a745;
+    }
+
+    .btn-success:hover {
+      background: #34ce57;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+    }
+
+    .btn-secondary:hover {
+      background: #8a929b;
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: #dc3545;
+    }
+
+    .btn-danger:hover {
+      background: #e74c5e;
+      transform: translateY(-2px);
+    }
+
+    .btn-info {
+      background: #17a2b8;
+    }
+
+    .btn-info:hover {
+      background: #1fc8e0;
+      transform: translateY(-2px);
+    }
+
+    .btn-warning {
+      background: #ffc107;
+      color: #111;
+    }
+
+    .btn-warning:hover {
+      background: #ffd044;
+      transform: translateY(-2px);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .btn-upload {
+      background: #2d7aff;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #fff;
+      transition: 0.2s;
+      flex: 1;
+      text-align: center;
+    }
+
+    .btn-upload:hover {
+      background: #4a8cff;
+      transform: translateY(-2px);
+    }
+
+    .hint {
+      font-size: 10px;
+      color: #555;
+      margin-top: 2px;
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 28px;
+      border-radius: 40px;
+      background: rgba(0, 0, 0, 0.92);
+      color: #fff;
+      font-weight: 500;
+      opacity: 0;
+      transition: 0.35s ease;
+      z-index: 9999;
+      pointer-events: none;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 13px;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    .shortcuts {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 10px;
+      color: #555;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .shortcuts kbd {
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 10px;
+      color: #888;
+    }
+
+    .template-selector {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .template-btn {
+      padding: 4px 12px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      background: transparent;
+      color: #888;
+      font-size: 11px;
+      cursor: pointer;
+      transition: 0.2s;
+      font-weight: 500;
+    }
+
+    .template-btn:hover {
+      border-color: rgba(255, 215, 120, 0.3);
+      color: #fff;
+    }
+
+    .template-btn.active {
+      border-color: #ffd978;
+      color: #ffd978;
+      background: rgba(255, 215, 120, 0.08);
+    }
+
+    .section-divider {
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 10px;
+      margin-top: 6px;
+    }
+
+    .section-title {
+      color: #ffd978;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .coord-input {
+      width: 100%;
+      padding: 5px 8px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      color: #fff;
+      font-size: 12px;
+      transition: 0.2s;
+      outline: none;
+      font-family: monospace;
+    }
+
+    .coord-input:focus {
+      border-color: #ffd978;
+      background: rgba(255, 215, 120, 0.05);
+    }
+
+    .element-label {
+      font-size: 11px;
+      color: #aaa;
+      font-weight: 500;
+      min-width: 30px;
+    }
+
+    /* 加载状态占位 */
+    .canvas-placeholder {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: rgba(255, 255, 255, 0.2);
+      font-size: 14px;
+      letter-spacing: 2px;
+      pointer-events: none;
+    }
+
+    @media (max-width: 860px) {
+      .container {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .panel {
+        min-width: unset;
+        max-width: unset;
+        width: 100%;
+        max-height: unset;
+      }
+
+      .canvas-wrapper {
+        width: 100%;
+      }
+
+      #certificateCanvas {
+        max-width: 100%;
+      }
+
+      .edit-hint {
+        display: none;
+      }
+
+      .header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+      }
+
+      .header-actions {
+        flex-wrap: wrap;
+      }
+
+      .panel-row {
+        flex-wrap: wrap;
+      }
+    }
+
+    @media (min-width: 1400px) {
+      #certificateCanvas {
+        max-width: 1000px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="toast" class="toast">✅ 操作成功</div>
+
+  <!-- Header -->
+  <div class="header">
+    <h1>🎨 图片编辑</h1>
+    <div class="header-actions">
+      <button class="btn btn-info" id="saveTemplateBtn">💾 保存模板</button>
+      <button class="btn btn-warning" id="loadTemplateBtn">
+        📂 加载模板
+      </button>
+      <button class="btn btn-success" id="uploadBgHeaderBtn">
+        🖼️ 上传背景
+      </button>
+      <button class="btn btn-danger" id="resetTemplateBtn">🔄 重置</button>
+      <input type="file" id="templateFileInput" accept=".json" style="display: none" />
+      <input type="file" id="bgInput" accept="image/*" style="display: none" />
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Canvas -->
+    <div class="canvas-wrapper" id="canvasWrapper">
+      <canvas id="certificateCanvas" width="1200" height="700"></canvas>
+      <div class="edit-hint">🖱️ 拖拽移动 · 双击编辑</div>
+    </div>
+
+    <!-- 控制面板 -->
+    <div class="panel">
+      <h2>📐 模板编辑</h2>
+
+      <!-- 模板选择 -->
+      <div class="panel-group">
+        <label>📁 模板</label>
+        <div class="template-selector">
+          <button class="template-btn active" data-template="default">
+            默认
+          </button>
+        </div>
+      </div>
+
+      <div class="panel-group">
+        <label>👤 头像</label>
+        <div class="btn-group">
+          <button class="btn-upload" id="uploadAvatarBtn">📷 上传头像</button>
+          <button class="btn btn-danger" id="resetAvatarBtn" style="flex: 0.3">
+            ✕
+          </button>
+        </div>
+        <input type="file" id="avatarInput" accept="image/*" style="display: none" />
+      </div>
+
+      <!-- ===== 文字样式调整 ===== -->
+      <div class="section-divider">
+        <div class="section-title">
+          ✏️ 文字编辑 (内容 · 位置 · 颜色 · 大小)
+        </div>
+      </div>
+
+      <!-- ===== 奖牌编号 ===== -->
+      <div class="panel-group">
+        <label>🏅 奖牌编号</label>
+        <div class="panel-row">
+          <div class="panel-group" style="flex: 1.2">
+            <input type="text" id="medalInput" value="1" data-key="medal" />
+          </div>
+          <div class="panel-group tiny">
+            <input type="number" class="coord-input" id="medalX" value="365" placeholder="X" />
+          </div>
+          <div class="panel-group tiny">
+            <input type="number" class="coord-input" id="medalY" value="364" placeholder="Y" />
+          </div>
+          <div class="panel-group tiny">
+            <div class="color-picker-wrapper">
+              <input type="color" id="medalColor" value="#ffdd87" />
+              <span class="color-hex" id="medalColorHex">#ffdd87</span>
+            </div>
+          </div>
+          <div class="panel-group tiny">
+            <input type="number" id="medalSize" value="48" min="10" max="80" />
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 标题 ===== -->
+      <div class="panel-group">
+        <label>🎯 标题</label>
+        <div class="panel-row">
+          <div class="panel-group" style="flex: 1.2">
+            <input type="text" id="bannerInput" value="Congratulation" data-key="banner" />
+          </div>
+          <div class="panel-group tiny">
+            <input type="number" class="coord-input" id="bannerX" value="595" placeholder="X" />
+          </div>
+          <div class="panel-group tiny">
+            <input type="number" class="coord-input" id="bannerY" value="542.5" placeholder="Y" step="0.5" />
+          </div>
+          <div class="panel-group tiny">
+            <div class="color-picker-wrapper">
+              <input type="color" id="bannerColor" value="#111111" />
+              <span class="color-hex" id="bannerColorHex">#111111</span>
+            </div>
+          </div>
+          <div class="panel-group tiny">
+            <input type="number" id="bannerSize" value="22" min="10" max="60" />
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 用户ID ===== -->
+      <div class="panel-group">
+        <label>🆔 用户ID</label>
+        <div class="panel-row">
+          <div class="panel-group" style="flex: 1.2">
+            <input type="text" id="userIdInput" value="8776843" data-key="userId" />
+          </div>
+          <div class="panel-group tiny">
+            <input type="number" class="coord-input" id="userIdX" value="895" placeholder="X" />
+          </div>
+          <div class="panel-group tiny">
+            <input type="number" class="coord-input" id="userIdY" value="420" placeholder="Y" />
+          </div>
+          <div class="panel-group tiny">
+            <div class="color-picker-wrapper">
+              <input type="color" id="userIdColor" value="#ffd978" />
+              <span class="color-hex" id="userIdColorHex">#ffd978</span>
+            </div>
+          </div>
+          <div class="panel-group tiny">
+            <input type="number" id="userIdSize" value="20" min="10" max="60" />
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 邮箱 ===== -->
+      <div class="panel-group">
+        <label>📧 邮箱</label>
+        <div class="panel-row">
+          <div class="panel-group" style="flex: 1.2">
+            <input type="text" id="emailInput" value="ken****nne@gmail.com" data-key="email" />
+          </div>
+          <div class="panel-group tiny">
+            <input type="number" class="coord-input" id="emailX" value="895" placeholder="X" />
+          </div>
+          <div class="panel-group tiny">
+            <input type="number" class="coord-input" id="emailY" value="468" placeholder="Y" />
+          </div>
+          <div class="panel-group tiny">
+            <div class="color-picker-wrapper">
+              <input type="color" id="emailColor" value="#ffd978" />
+              <span class="color-hex" id="emailColorHex">#ffd978</span>
+            </div>
+          </div>
+          <div class="panel-group tiny">
+            <input type="number" id="emailSize" value="20" min="10" max="60" />
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 奖励标签 ===== -->
+      <div class="panel-group">
+        <label>🏷️ 奖励标签</label>
+        <div class="panel-row">
+          <div class="panel-group" style="flex: 1.2">
+            <input type="text" id="bonusInput" value="Upgrade Bonus" data-key="bonus" />
+          </div>
+          <div class="panel-group tiny">
+            <input type="number" class="coord-input" id="bonusX" value="895" placeholder="X" />
+          </div>
+          <div class="panel-group tiny">
+            <input type="number" class="coord-input" id="bonusY" value="520" placeholder="Y" />
+          </div>
+          <div class="panel-group tiny">
+            <div class="color-picker-wrapper">
+              <input type="color" id="bonusColor" value="#ffd978" />
+              <span class="color-hex" id="bonusColorHex">#ffd978</span>
+            </div>
+          </div>
+          <div class="panel-group tiny">
+            <input type="number" id="bonusSize" value="18" min="10" max="60" />
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 等级 ===== -->
+      <div class="panel-group">
+        <label>📊 等级</label>
+        <div class="panel-row">
+          <div class="panel-group" style="flex: 1.2">
+            <input type="text" id="levelInput" value="LV1" data-key="level" />
+          </div>
+          <div class="panel-group tiny">
+            <input type="number" class="coord-input" id="levelX" value="825" placeholder="X" />
+          </div>
+          <div class="panel-group tiny">
+            <input type="number" class="coord-input" id="levelY" value="603" placeholder="Y" />
+          </div>
+          <div class="panel-group tiny">
+            <div class="color-picker-wrapper">
+              <input type="color" id="levelColor" value="#e2c376" />
+              <span class="color-hex" id="levelColorHex">#e2c376</span>
+            </div>
+          </div>
+          <div class="panel-group tiny">
+            <input type="number" id="levelSize" value="48" min="10" max="80" />
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 奖励金额 ===== -->
+      <div class="panel-group">
+        <label>💰 奖励金额</label>
+        <div class="panel-row">
+          <div class="panel-group" style="flex: 1.2">
+            <input type="text" id="rewardInput" value="50 USDT" data-key="reward" />
+          </div>
+          <div class="panel-group tiny">
+            <input type="number" class="coord-input" id="rewardX" value="910" placeholder="X" />
+          </div>
+          <div class="panel-group tiny">
+            <input type="number" class="coord-input" id="rewardY" value="603" placeholder="Y" />
+          </div>
+          <div class="panel-group tiny">
+            <div class="color-picker-wrapper">
+              <input type="color" id="rewardColor" value="#e2c376" />
+              <span class="color-hex" id="rewardColorHex">#e2c376</span>
+            </div>
+          </div>
+          <div class="panel-group tiny">
+            <input type="number" id="rewardSize" value="48" min="10" max="80" />
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-group" style="margin-top: 8px">
+        <button class="btn btn-success" id="exportPngBtn">💾 导出 PNG</button>
+        <button class="btn btn-primary" id="copyImageBtn">📋 复制</button>
+      </div>
+
+      <div class="shortcuts">
+        <span><kbd>Ctrl+S</kbd> 导出</span>
+        <span><kbd>Ctrl+Shift+C</kbd> 复制</span>
+        <span><kbd>双击</kbd> 编辑</span>
+        <span><kbd>拖拽</kbd> 移动</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      // ======================== 模板系统 ========================
+      const TEMPLATES = {
+        default: {
+          name: "默认",
+          bgImage: "3.jpg",
+          elements: {
+            medal: { left: 365, top: 312, fontSize: 48, color: "#ffdd87" },
+            banner: { left: 590, top: 491.5, fontSize: 22, color: "#111111" },
+            userId: {
+              left: 895,
+              top: 370,
+              fontSize: 20,
+              color: "#ffd978",
+              align: "left",
+            },
+            email: {
+              left: 895,
+              top: 410,
+              fontSize: 20,
+              color: "#ffd978",
+              align: "left",
+            },
+            bonus: {
+              left: 895,
+              top: 454,
+              fontSize: 18,
+              color: "#ffd978",
+              align: "left",
+            },
+            level: {
+              left: 825,
+              top: 530,
+              fontSize: 48,
+              color: "#e2c376",
+              align: "left",
+              fontWeight: 800,
+            },
+            reward: {
+              left: 910,
+              top: 530,
+              fontSize: 48,
+              color: "#e2c376",
+              align: "left",
+            },
+          },
+        },
+      };
+
+      // ======================== DOM ========================
+      const canvasEl = document.getElementById("certificateCanvas");
+      const canvasWrapper = document.getElementById("canvasWrapper");
+      const toast = document.getElementById("toast");
+
+      // 内容输入框
+      const medalInput = document.getElementById("medalInput");
+      const bannerInput = document.getElementById("bannerInput");
+      const userIdInput = document.getElementById("userIdInput");
+      const emailInput = document.getElementById("emailInput");
+      const bonusInput = document.getElementById("bonusInput");
+      const levelInput = document.getElementById("levelInput");
+      const rewardInput = document.getElementById("rewardInput");
+
+      // 坐标输入框
+      const medalX = document.getElementById("medalX");
+      const medalY = document.getElementById("medalY");
+      const bannerX = document.getElementById("bannerX");
+      const bannerY = document.getElementById("bannerY");
+      const userIdX = document.getElementById("userIdX");
+      const userIdY = document.getElementById("userIdY");
+      const emailX = document.getElementById("emailX");
+      const emailY = document.getElementById("emailY");
+      const bonusX = document.getElementById("bonusX");
+      const bonusY = document.getElementById("bonusY");
+      const levelX = document.getElementById("levelX");
+      const levelY = document.getElementById("levelY");
+      const rewardX = document.getElementById("rewardX");
+      const rewardY = document.getElementById("rewardY");
+
+      // 颜色选择器
+      const medalColor = document.getElementById("medalColor");
+      const bannerColor = document.getElementById("bannerColor");
+      const userIdColor = document.getElementById("userIdColor");
+      const emailColor = document.getElementById("emailColor");
+      const bonusColor = document.getElementById("bonusColor");
+      const levelColor = document.getElementById("levelColor");
+      const rewardColor = document.getElementById("rewardColor");
+
+      // 颜色显示
+      const medalColorHex = document.getElementById("medalColorHex");
+      const bannerColorHex = document.getElementById("bannerColorHex");
+      const userIdColorHex = document.getElementById("userIdColorHex");
+      const emailColorHex = document.getElementById("emailColorHex");
+      const bonusColorHex = document.getElementById("bonusColorHex");
+      const levelColorHex = document.getElementById("levelColorHex");
+      const rewardColorHex = document.getElementById("rewardColorHex");
+
+      // 字体大小
+      const medalSize = document.getElementById("medalSize");
+      const bannerSize = document.getElementById("bannerSize");
+      const userIdSize = document.getElementById("userIdSize");
+      const emailSize = document.getElementById("emailSize");
+      const bonusSize = document.getElementById("bonusSize");
+      const levelSize = document.getElementById("levelSize");
+      const rewardSize = document.getElementById("rewardSize");
+
+      const avatarInput = document.getElementById("avatarInput");
+      const uploadAvatarBtn = document.getElementById("uploadAvatarBtn");
+      const resetAvatarBtn = document.getElementById("resetAvatarBtn");
+      const bgInput = document.getElementById("bgInput");
+      const uploadBgHeaderBtn = document.getElementById("uploadBgHeaderBtn");
+      const exportPngBtn = document.getElementById("exportPngBtn");
+      const copyImageBtn = document.getElementById("copyImageBtn");
+      const saveTemplateBtn = document.getElementById("saveTemplateBtn");
+      const loadTemplateBtn = document.getElementById("loadTemplateBtn");
+      const resetTemplateBtn = document.getElementById("resetTemplateBtn");
+      const templateFileInput = document.getElementById("templateFileInput");
+      const templateBtns = document.querySelectorAll(".template-btn");
+
+      let toastTimer;
+      let currentTemplate = "default";
+      let currentAvatarUrl = "https://i.pravatar.cc/300?img=11";
+      let currentBgUrl = "3.jpg";
+      let isFirstLoad = true;
+
+      // 配置映射：每个元素对应的所有控件
+      const elementConfig = {
+        medal: {
+          textInput: medalInput,
+          xInput: medalX,
+          yInput: medalY,
+          colorInput: medalColor,
+          sizeInput: medalSize,
+          colorHex: medalColorHex,
+          align: "center",
+        },
+        banner: {
+          textInput: bannerInput,
+          xInput: bannerX,
+          yInput: bannerY,
+          colorInput: bannerColor,
+          sizeInput: bannerSize,
+          colorHex: bannerColorHex,
+          align: "center",
+        },
+        userId: {
+          textInput: userIdInput,
+          xInput: userIdX,
+          yInput: userIdY,
+          colorInput: userIdColor,
+          sizeInput: userIdSize,
+          colorHex: userIdColorHex,
+          align: "left",
+        },
+        email: {
+          textInput: emailInput,
+          xInput: emailX,
+          yInput: emailY,
+          colorInput: emailColor,
+          sizeInput: emailSize,
+          colorHex: emailColorHex,
+          align: "left",
+        },
+        bonus: {
+          textInput: bonusInput,
+          xInput: bonusX,
+          yInput: bonusY,
+          colorInput: bonusColor,
+          sizeInput: bonusSize,
+          colorHex: bonusColorHex,
+          align: "left",
+        },
+        level: {
+          textInput: levelInput,
+          xInput: levelX,
+          yInput: levelY,
+          colorInput: levelColor,
+          sizeInput: levelSize,
+          colorHex: levelColorHex,
+          align: "left",
+        },
+        reward: {
+          textInput: rewardInput,
+          xInput: rewardX,
+          yInput: rewardY,
+          colorInput: rewardColor,
+          sizeInput: rewardSize,
+          colorHex: rewardColorHex,
+          align: "left",
+        },
+      };
+
+      const objectKeys = {
+        medal: medalInput,
+        banner: bannerInput,
+        userId: userIdInput,
+        email: emailInput,
+        bonus: bonusInput,
+        level: levelInput,
+        reward: rewardInput,
+      };
+
+      function showToast(msg) {
+        toast.textContent = msg;
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+      }
+
+      // ======================== Fabric ========================
+      let canvasWidth = 1200;
+      let canvasHeight = 700;
+
+      const canvas = new fabric.Canvas(canvasEl, {
+        width: canvasWidth,
+        height: canvasHeight,
+        backgroundColor: "transparent",
+        selection: false,
+        renderOnAddRemove: true,
+        preserveObjectStacking: true,
+      });
+
+      let objects = {
+        bg: null,
+        avatar: null,
+        avatarBorder: null,
+        avatarGlow: null,
+        medal: null,
+        bannerBg: null,
+        banner: null,
+        userId: null,
+        email: null,
+        bonus: null,
+        level: null,
+        reward: null,
+      };
+
+      // ======================== 自适应 ========================
+      function fitCanvas() {
+        const wrapperWidth = canvasWrapper.clientWidth - 24;
+        const maxWidth = Math.min(wrapperWidth, 1000);
+        const ratio = canvasWidth / canvasHeight;
+        const displayWidth = Math.max(300, maxWidth);
+        const displayHeight = displayWidth / ratio;
+
+        canvasEl.style.width = displayWidth + "px";
+        canvasEl.style.height = displayHeight + "px";
+
+        console.log(`📐 自适应: ${displayWidth.toFixed(0)}x${displayHeight.toFixed(0)}`);
+      }
+
+      // 使用 requestAnimationFrame 确保 DOM 渲染完成
+      function scheduleFitCanvas(delay = 0) {
+        if (delay > 0) {
+          setTimeout(() => {
+            requestAnimationFrame(fitCanvas);
+          }, delay);
+        } else {
+          requestAnimationFrame(fitCanvas);
+        }
+      }
+
+      // 使用 MutationObserver 监听容器尺寸变化
+      let resizeObserver = null;
+
+      function setupResizeObserver() {
+        if (window.ResizeObserver) {
+          resizeObserver = new ResizeObserver(() => {
+            fitCanvas();
+          });
+          resizeObserver.observe(canvasWrapper);
+        }
+        window.addEventListener("resize", fitCanvas);
+      }
+
+      // ======================== 构建证书 ========================
+      let isBuilding = false;
+
+      function getTextStyle(
+        color = "#ffd978",
+        fontSize = 20,
+        fontWeight = "600",
+        align = "left",
+      ) {
+        const alignMap = {
+          left: { textAlign: "left", originX: "left" },
+          right: { textAlign: "right", originX: "right" },
+          center: { textAlign: "center", originX: "center" },
+        };
+        const alignment = alignMap[align] || alignMap.left;
+
+        return {
+          fill: color,
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+          fontFamily: "'Rajdhani', sans-serif",
+          textAlign: alignment.textAlign,
+          originX: alignment.originX,
+          originY: "center",
+          shadow: new fabric.Shadow({
+            color: "rgba(255,215,100,0.2)",
+            blur: 8,
+            offsetX: 0,
+            offsetY: 0,
+          }),
+          selectable: true,
+          evented: true,
+          cursor: "move",
+        };
+      }
+
+      function buildCertificate(templateName) {
+        if (isBuilding) return;
+        isBuilding = true;
+
+        const template = TEMPLATES[templateName] || TEMPLATES.default;
+
+        updateTemplateFromUI(templateName);
+
+        canvas.clear();
+
+        // 先渲染文字层（不依赖背景）
+        buildTextLayers(template);
+
+        // 然后加载背景图
+        const bgUrl = currentBgUrl || template.bgImage || "3.jpg";
+
+        // 如果背景图是 "3.jpg" 且可能加载失败，先用渐变色占位
+        if (bgUrl === "3.jpg" || bgUrl.includes("3.jpg")) {
+          // 尝试加载，失败则用渐变
+          loadBackgroundWithFallback(bgUrl, template);
+        } else {
+          loadBackgroundWithFallback(bgUrl, template);
+        }
+
+        // 头像总是加载
+        buildAvatar(currentAvatarUrl, template);
+
+        // 安排自适应（多次尝试确保成功）
+        scheduleFitCanvas(50);
+        scheduleFitCanvas(200);
+        scheduleFitCanvas(500);
+
+        setTimeout(() => {
+          isBuilding = false;
+        }, 1000);
+      }
+
+      function loadBackgroundWithFallback(url, template) {
+        fabric.Image.fromURL(
+          url,
+          (img) => {
+            if (img) {
+              const bgRatio = img.width / img.height;
+              const targetWidth = 1200;
+              const targetHeight = Math.round(targetWidth / bgRatio);
+
+              canvasWidth = targetWidth;
+              canvasHeight = targetHeight;
+              canvas.setWidth(canvasWidth);
+              canvas.setHeight(canvasHeight);
+
+              canvasEl.width = canvasWidth;
+              canvasEl.height = canvasHeight;
+
+              img.set({
+                left: 0,
+                top: 0,
+                scaleX: canvasWidth / img.width,
+                scaleY: canvasHeight / img.height,
+                selectable: false,
+                evented: false,
+                originX: "left",
+                originY: "top",
+                crossOrigin: "anonymous",
+              });
+              objects.bg = img;
+              canvas.add(img);
+              canvas.sendToBack(img);
+              canvas.renderAll();
+              scheduleFitCanvas();
+            } else {
+              // 背景加载失败，使用渐变填充
+              useFallbackBackground(template);
+            }
+          }, { crossOrigin: "anonymous" }
+        );
+      }
+
+      function useFallbackBackground(template) {
+        // 创建一个渐变背景作为后备
+        const gradient = new fabric.Gradient({
+          type: "linear",
+          coords: { x1: 0, y1: 0, x2: 1, y2: 1 },
+          colorStops: [
+            { offset: 0, color: "#1a0a2e" },
+            { offset: 0.5, color: "#16213e" },
+            { offset: 1, color: "#0f3460" },
+          ],
+        });
+
+        const bgRect = new fabric.Rect({
+          left: 0,
+          top: 0,
+          width: 1200,
+          height: 700,
+          fill: gradient,
+          selectable: false,
+          evented: false,
+          originX: "left",
+          originY: "top",
+        });
+
+        objects.bg = bgRect;
+        canvas.add(bgRect);
+        canvas.sendToBack(bgRect);
+        canvas.renderAll();
+
+        // 重新应用文字层（确保在背景之上）
+        const templateData = TEMPLATES[currentTemplate] || TEMPLATES.default;
+        // 文字层已经在 buildTextLayers 中添加了，但可能被清除
+        // 确保文字在最上层
+        canvas.renderAll();
+        scheduleFitCanvas();
+      }
+
+      function buildTextLayers(template) {
+        const elems = template.elements;
+
+        const medalVal = medalInput.value || "1";
+        const bannerVal = bannerInput.value || "Congratulation";
+        const userIdVal = userIdInput.value || "8776843";
+        const emailVal = emailInput.value || "ken****nne@gmail.com";
+        const bonusVal = bonusInput.value || "Upgrade Bonus";
+        const levelVal = levelInput.value || "LV1";
+        const rewardVal = rewardInput.value || "50 USDT";
+
+        // 奖牌渐变色
+        const medalGradient = new fabric.Gradient({
+          type: "linear",
+          coords: { x1: 0, y1: 0, x2: 0, y2: 1 },
+          colorStops: [
+            { offset: 0, color: "#fff5b0" },
+            { offset: 0.3, color: "#d89b22" },
+            { offset: 0.7, color: "#8b5200" },
+            { offset: 1, color: "#ffd966" },
+          ],
+        });
+
+        const medal = new fabric.Text(medalVal, {
+          left: elems.medal.left,
+          top: elems.medal.top,
+          fontSize: elems.medal.fontSize,
+          fontWeight: 900,
+          fill: medalGradient,
+          fontFamily: "'Cinzel', serif",
+          textAlign: "center",
+          originX: "center",
+          originY: "center",
+          shadow: new fabric.Shadow({
+            color: "rgba(0,0,0,0.6)",
+            blur: 8,
+            offsetX: 3,
+            offsetY: 5,
+          }),
+          stroke: "#6b3b00",
+          strokeWidth: 0.5,
+          selectable: true,
+          evented: true,
+          cursor: "move",
+        });
+        objects.medal = medal;
+        canvas.add(medal);
+
+        // 标题背景横幅
+        const bannerBg = new fabric.Rect({
+          left: 468 * (canvasWidth / 1200),
+          top: 519 * (canvasHeight / 700),
+          width: 260 * (canvasWidth / 1200),
+          height: 45 * (canvasHeight / 700),
+          rx: 30 * (canvasWidth / 1200),
+          ry: 30 * (canvasHeight / 700),
+          fill: new fabric.Gradient({
+            type: "linear",
+            coords: { x1: 0, y1: 0, x2: 0, y2: 1 },
+            colorStops: [
+              { offset: 0, color: "#b8860b" },
+              { offset: 0.5, color: "#ffe9a8" },
+              { offset: 1, color: "#b8860b" },
+            ],
+          }),
+          selectable: false,
+          evented: false,
+          originX: "left",
+          originY: "top",
+          shadow: new fabric.Shadow({
+            color: "rgba(184,134,11,0.3)",
+            blur: 12,
+            offsetX: 0,
+            offsetY: 2,
+          }),
+        });
+        objects.bannerBg = bannerBg;
+        canvas.add(bannerBg);
+
+        const bannerText = new fabric.Text(bannerVal, {
+          left: elems.banner.left,
+          top: elems.banner.top,
+          fontSize: elems.banner.fontSize,
+          fontWeight: 900,
+          fill: elems.banner.color,
+          fontFamily: "'Rajdhani', sans-serif",
+          textAlign: "center",
+          originX: "center",
+          originY: "center",
+          selectable: true,
+          evented: true,
+          cursor: "move",
+        });
+        objects.banner = bannerText;
+        canvas.add(bannerText);
+
+        const userId = new fabric.Text(userIdVal, {
+          left: elems.userId.left,
+          top: elems.userId.top,
+          ...getTextStyle(
+            elems.userId.color,
+            elems.userId.fontSize,
+            "600",
+            elems.userId.align || "left",
+          ),
+        });
+        objects.userId = userId;
+        canvas.add(userId);
+
+        const email = new fabric.Text(emailVal, {
+          left: elems.email.left,
+          top: elems.email.top,
+          ...getTextStyle(
+            elems.email.color,
+            elems.email.fontSize,
+            "600",
+            elems.email.align || "left",
+          ),
+        });
+        objects.email = email;
+        canvas.add(email);
+
+        const bonus = new fabric.Text(bonusVal, {
+          left: elems.bonus.left,
+          top: elems.bonus.top,
+          ...getTextStyle(
+            elems.bonus.color,
+            elems.bonus.fontSize,
+            "700",
+            elems.bonus.align || "left",
+          ),
+        });
+        objects.bonus = bonus;
+        canvas.add(bonus);
+
+        const level = new fabric.Text(levelVal, {
+          left: elems.level.left,
+          top: elems.level.top,
+          ...getTextStyle(
+            elems.level.color,
+            elems.level.fontSize,
+            "900",
+            elems.level.align || "left",
+          ),
+        });
+        objects.level = level;
+        canvas.add(level);
+
+        const reward = new fabric.Text(rewardVal, {
+          left: elems.reward.left,
+          top: elems.reward.top,
+          ...getTextStyle(
+            elems.reward.color,
+            elems.reward.fontSize,
+            "900",
+            elems.reward.align || "left",
+          ),
+        });
+        objects.reward = reward;
+        canvas.add(reward);
+
+        enableDragging();
+        canvas.renderAll();
+      }
+
+      function updateTemplateFromUI(templateName) {
+        const template = TEMPLATES[templateName];
+        if (!template) return;
+
+        const keys = [
+          "medal",
+          "banner",
+          "userId",
+          "email",
+          "bonus",
+          "level",
+          "reward",
+        ];
+        keys.forEach((key) => {
+          if (template.elements[key]) {
+            const config = elementConfig[key];
+            if (config) {
+              const x =
+                parseFloat(config.xInput.value) ||
+                template.elements[key].left;
+              const y =
+                parseFloat(config.yInput.value) || template.elements[key].top;
+              const color = config.colorInput.value;
+              const size =
+                parseInt(config.sizeInput.value) ||
+                template.elements[key].fontSize;
+
+              template.elements[key].left = x;
+              template.elements[key].top = y;
+              template.elements[key].color = color;
+              template.elements[key].fontSize = size;
+
+              if (config.colorHex) {
+                config.colorHex.textContent = color;
+              }
+            }
+          }
+        });
+      }
+
+      // ======================== 头像构建 ========================
+      function buildAvatar(url, template) {
+        // ===== 获取画布实际尺寸 =====
+        const canvasWidth = canvas.width || 1200;
+        const canvasHeight = canvas.height || 700;
+
+        // 设计稿尺寸
+        const DESIGN_WIDTH = 1200;
+        const DESIGN_HEIGHT = 700;
+
+        // 头像在设计稿中的位置（460, 194）和半径 138
+        const AVATAR_LEFT = 460;
+        const AVATAR_TOP = 196;
+        const AVATAR_RADIUS = 138;
+
+        // 计算缩放比例（使用画布实际尺寸）
+        const scaleX = canvasWidth / DESIGN_WIDTH;
+        const scaleY = canvasHeight / DESIGN_HEIGHT;
+        const scale = Math.min(scaleX, scaleY);
+
+        // 计算实际位置（使用画布实际尺寸）
+        const avatarRadius = AVATAR_RADIUS * scale;
+        const centerX = (AVATAR_LEFT + AVATAR_RADIUS) * scaleX;
+        const centerY = (AVATAR_TOP + AVATAR_RADIUS) * scaleY;
+
+        console.log(`📐 头像缩放: 设计稿(1200x700) → 实际(${canvasWidth}x${canvasHeight}), scale=${scale.toFixed(3)}`);
+
+        if (objects.avatar) {
+          canvas.remove(objects.avatar);
+          objects.avatar = null;
+        }
+        if (objects.avatarBorder) {
+          canvas.remove(objects.avatarBorder);
+          objects.avatarBorder = null;
+        }
+        if (objects.avatarGlow) {
+          canvas.remove(objects.avatarGlow);
+          objects.avatarGlow = null;
+        }
+
+        fabric.Image.fromURL(
+          url,
+          (img) => {
+            if (img) {
+              const scaleXImg = (avatarRadius * 2) / img.width;
+              const scaleYImg = (avatarRadius * 2) / img.height;
+              const scale = Math.max(scaleXImg, scaleYImg);
+
+              const clipPath = new fabric.Circle({
+                radius: avatarRadius,
+                left: centerX - avatarRadius,
+                top: centerY - avatarRadius,
+                originX: "left",
+                originY: "top",
+                absolutePositioned: true,
+              });
+
+              const scaledWidth = img.width * scale;
+              const scaledHeight = img.height * scale;
+              const offsetX = (scaledWidth - avatarRadius * 2) / 2;
+              const offsetY = (scaledHeight - avatarRadius * 2) / 2;
+
+              img.set({
+                left: centerX - avatarRadius - offsetX,
+                top: centerY - avatarRadius - offsetY,
+                scaleX: scale,
+                scaleY: scale,
+                originX: "left",
+                originY: "top",
+                clipPath: clipPath,
+                selectable: false,
+                evented: false,
+                crossOrigin: "anonymous",
+              });
+
+              objects.avatar = img;
+              canvas.add(img);
+
+              // 边框
+              const border = new fabric.Circle({
+                radius: avatarRadius + 3,
+                left: centerX,
+                top: centerY,
+                originX: "center",
+                originY: "center",
+                fill: "transparent",
+                stroke: "#eedd99",
+                strokeWidth: 5 * scale,
+                selectable: false,
+                evented: false,
+                shadow: new fabric.Shadow({
+                  color: "rgba(255,215,100,0.1)",
+                  blur: 25,
+                  offsetX: 0,
+                  offsetY: 0,
+                }),
+              });
+              objects.avatarBorder = border;
+              canvas.add(border);
+
+              // 金色光圈（增强效果）
+              const glow = new fabric.Circle({
+                radius: avatarRadius + 15,
+                left: centerX,
+                top: centerY,
+                originX: "center",
+                originY: "center",
+                fill: "transparent",
+                stroke: "rgba(255,215,0,0.25)",
+                strokeWidth: 4 * scale,
+                selectable: false,
+                evented: false,
+                shadow: new fabric.Shadow({
+                  color: "rgba(255,215,0,0.3)",
+                  blur: 20,
+                  offsetX: 0,
+                  offsetY: 0,
+                }),
+              });
+              objects.avatarGlow = glow;
+              canvas.add(glow);
+
+              // 确保头像在边框上方
+              if (objects.avatar) {
+                canvas.bringToFront(objects.avatar);
+              }
+              if (objects.avatarBorder) {
+                canvas.bringToFront(objects.avatarBorder);
+              }
+              if (objects.avatarGlow) {
+                canvas.bringToFront(objects.avatarGlow);
+              }
+
+              canvas.renderAll();
+            } else {
+              if (url !== "https://i.pravatar.cc/300?img=11") {
+                currentAvatarUrl = "https://i.pravatar.cc/300?img=11";
+                buildAvatar(currentAvatarUrl, template);
+              }
+            }
+          },
+          { crossOrigin: "anonymous" },
+        );
+      }
+
+      // ======================== 启用拖拽 ========================
+      function enableDragging() {
+        const textObjects = [
+          objects.medal,
+          objects.banner,
+          objects.userId,
+          objects.email,
+          objects.bonus,
+          objects.level,
+          objects.reward,
+        ].filter((obj) => obj);
+
+        textObjects.forEach((obj) => {
+          obj.set({
+            selectable: true,
+            evented: true,
+            cursor: "move",
+          });
+        });
+
+        canvas.on("object:modified", function (e) {
+          const target = e.target;
+          if (target && target.type === "text") {
+            const key = getKeyForObject(target);
+            if (key) {
+              const config = elementConfig[key];
+              if (config) {
+                config.xInput.value = Math.round(target.left);
+                config.yInput.value = Math.round(target.top);
+                const template = TEMPLATES[currentTemplate];
+                if (template && template.elements[key]) {
+                  template.elements[key].left = Math.round(target.left);
+                  template.elements[key].top = Math.round(target.top);
+                }
+              }
+            }
+          }
+        });
+
+        canvas.on("mouse:dblclick", function (opt) {
+          const target = opt.target;
+          if (!target || target.type !== "text") {
+            clearHighlight();
+            return;
+          }
+
+          const input = getInputForObject(target);
+          if (input) {
+            highlightInput(input);
+            input.focus();
+            input.select();
+            showToast(`✏️ 正在编辑: "${input.value}"`);
+          }
+        });
+      }
+
+      // ======================== 工具函数 ========================
+      function getKeyForObject(obj) {
+        for (const [key, storedObj] of Object.entries(objects)) {
+          if (storedObj === obj) {
+            return key;
+          }
+        }
+        return null;
+      }
+
+      function getInputForObject(obj) {
+        for (const [key, storedObj] of Object.entries(objects)) {
+          if (storedObj === obj) {
+            return objectKeys[key];
+          }
+        }
+        return null;
+      }
+
+      function highlightInput(input) {
+        if (!input) return;
+        document.querySelectorAll(".panel-group input").forEach((el) => {
+          el.classList.remove("highlight");
+        });
+        input.classList.add("highlight");
+        input.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
+      function clearHighlight() {
+        document.querySelectorAll(".panel-group input").forEach((el) => {
+          el.classList.remove("highlight");
+        });
+      }
+
+      // ======================== 更新文字 ========================
+      function updateText(objectKey, value) {
+        const obj = objects[objectKey];
+        if (obj && obj.type === "text") {
+          obj.set("text", value || " ");
+          canvas.renderAll();
+        }
+      }
+
+      medalInput.addEventListener("input", () =>
+        updateText("medal", medalInput.value)
+      );
+      bannerInput.addEventListener("input", () =>
+        updateText("banner", bannerInput.value)
+      );
+      userIdInput.addEventListener("input", () =>
+        updateText("userId", userIdInput.value)
+      );
+      emailInput.addEventListener("input", () =>
+        updateText("email", emailInput.value)
+      );
+      bonusInput.addEventListener("input", () =>
+        updateText("bonus", bonusInput.value)
+      );
+      levelInput.addEventListener("input", () =>
+        updateText("level", levelInput.value)
+      );
+      rewardInput.addEventListener("input", () =>
+        updateText("reward", rewardInput.value)
+      );
+
+      // ======================== 更新样式 ========================
+      function updateTextStyle(key) {
+        const obj = objects[key];
+        if (!obj || obj.type !== "text") return;
+
+        const config = elementConfig[key];
+        if (!config) return;
+
+        const x = parseFloat(config.xInput.value) || obj.left;
+        const y = parseFloat(config.yInput.value) || obj.top;
+        const color = config.colorInput.value;
+        const size = parseInt(config.sizeInput.value) || obj.fontSize;
+
+        obj.set({
+          left: x,
+          top: y,
+          fill: color,
+          fontSize: size,
+        });
+
+        if (config.colorHex) {
+          config.colorHex.textContent = color;
+        }
+
+        const template = TEMPLATES[currentTemplate];
+        if (template && template.elements[key]) {
+          template.elements[key].left = x;
+          template.elements[key].top = y;
+          template.elements[key].color = color;
+          template.elements[key].fontSize = size;
+        }
+
+        canvas.renderAll();
+      }
+
+      Object.keys(elementConfig).forEach((key) => {
+        const config = elementConfig[key];
+        config.xInput.addEventListener("input", () => updateTextStyle(key));
+        config.yInput.addEventListener("input", () => updateTextStyle(key));
+        config.colorInput.addEventListener("input", () =>
+          updateTextStyle(key)
+        );
+        config.sizeInput.addEventListener("input", () =>
+          updateTextStyle(key)
+        );
+
+        if (config.colorHex) {
+          config.colorHex.textContent = config.colorInput.value;
+        }
+      });
+
+      // 输入框焦点高亮
+      document.querySelectorAll(".panel-group input").forEach((input) => {
+        input.addEventListener("focus", function () {
+          highlightInput(this);
+        });
+        input.addEventListener("blur", function () {
+          setTimeout(() => {
+            if (document.activeElement?.tagName !== "INPUT") {
+              clearHighlight();
+            }
+          }, 200);
+        });
+        input.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") {
+            this.blur();
+            clearHighlight();
+          }
+        });
+      });
+
+      canvas.on("mouse:down", function (opt) {
+        if (!opt.target) {
+          clearHighlight();
+        }
+      });
+
+      // ======================== 头像上传 ========================
+      uploadAvatarBtn.addEventListener("click", () => avatarInput.click());
+
+      avatarInput.addEventListener("change", function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+          showToast("⚠️ 请上传图片");
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+          const dataUrl = ev.target.result;
+          currentAvatarUrl = dataUrl;
+          const template = TEMPLATES[currentTemplate] || TEMPLATES.default;
+          buildAvatar(dataUrl, template);
+          showToast("✅ 头像更新成功");
+        };
+        reader.readAsDataURL(file);
+        this.value = "";
+      });
+
+      resetAvatarBtn.addEventListener("click", () => {
+        currentAvatarUrl = "https://i.pravatar.cc/300?img=11";
+        const template = TEMPLATES[currentTemplate] || TEMPLATES.default;
+        buildAvatar(currentAvatarUrl, template);
+        showToast("🔄 已重置头像");
+      });
+
+      // ======================== 背景上传 ========================
+      uploadBgHeaderBtn.addEventListener("click", () => bgInput.click());
+
+      bgInput.addEventListener("change", function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+          showToast("⚠️ 请上传图片");
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+          const dataUrl = ev.target.result;
+          currentBgUrl = dataUrl;
+          buildCertificate(currentTemplate);
+          showToast("✅ 背景图片更新成功");
+        };
+        reader.readAsDataURL(file);
+        this.value = "";
+      });
+
+      // ======================== 模板切换 ========================
+      templateBtns.forEach((btn) => {
+        btn.addEventListener("click", function () {
+          templateBtns.forEach((b) => b.classList.remove("active"));
+          this.classList.add("active");
+          currentTemplate = this.dataset.template;
+
+          const template = TEMPLATES[currentTemplate];
+          if (template) {
+            const keys = [
+              "medal",
+              "banner",
+              "userId",
+              "email",
+              "bonus",
+              "level",
+              "reward",
+            ];
+            keys.forEach((key) => {
+              const elem = template.elements[key];
+              if (elem) {
+                const config = elementConfig[key];
+                if (config) {
+                  config.xInput.value = elem.left;
+                  config.yInput.value = elem.top;
+                  config.colorInput.value = elem.color;
+                  config.sizeInput.value = elem.fontSize;
+                  if (config.colorHex) {
+                    config.colorHex.textContent = elem.color;
+                  }
+                }
+              }
+            });
+          }
+
+          buildCertificate(currentTemplate);
+          showToast(`📁 切换到: ${TEMPLATES[currentTemplate].name}`);
+        });
+      });
+
+      // ======================== 保存模板 ========================
+      saveTemplateBtn.addEventListener("click", function () {
+        try {
+          updateTemplateFromUI(currentTemplate);
+
+          const positions = {};
+          const textKeys = [
+            "medal",
+            "banner",
+            "userId",
+            "email",
+            "bonus",
+            "level",
+            "reward",
+          ];
+
+          textKeys.forEach((key) => {
+            const obj = objects[key];
+            if (obj && obj.type === "text") {
+              positions[key] = {
+                left: Math.round(obj.left),
+                top: Math.round(obj.top),
+                fontSize: obj.fontSize,
+                color: obj.fill,
+                align: obj.textAlign || "left",
+              };
+            }
+          });
+
+          const template = {
+            name: "自定义模板",
+            bgImage: "3.jpg",
+            elements: positions,
+            createdAt: new Date().toISOString(),
+          };
+
+          const blob = new Blob([JSON.stringify(template, null, 2)], {
+            type: "application/json",
+          });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.download = `certificate_template_${Date.now()}.json`;
+          link.href = url;
+          link.click();
+          URL.revokeObjectURL(url);
+
+          showToast("✅ 模板已保存");
+        } catch (err) {
+          showToast("⚠️ 保存失败: " + err.message);
+        }
+      });
+
+      // ======================== 加载模板 ========================
+      loadTemplateBtn.addEventListener("click", () =>
+        templateFileInput.click()
+      );
+
+      templateFileInput.addEventListener("change", function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+          try {
+            const template = JSON.parse(ev.target.result);
+            if (!template.elements) {
+              showToast("⚠️ 无效的模板文件");
+              return;
+            }
+
+            TEMPLATES["custom"] = template;
+            currentTemplate = "custom";
+
+            const keys = [
+              "medal",
+              "banner",
+              "userId",
+              "email",
+              "bonus",
+              "level",
+              "reward",
+            ];
+            keys.forEach((key) => {
+              const elem = template.elements[key];
+              if (elem) {
+                const config = elementConfig[key];
+                if (config) {
+                  config.xInput.value = elem.left;
+                  config.yInput.value = elem.top;
+                  config.colorInput.value = elem.color;
+                  config.sizeInput.value = elem.fontSize;
+                  if (config.colorHex) {
+                    config.colorHex.textContent = elem.color;
+                  }
+                }
+              }
+            });
+
+            const container = document.querySelector(".template-selector");
+            const customBtn = document.createElement("button");
+            customBtn.className = "template-btn active";
+            customBtn.dataset.template = "custom";
+            customBtn.textContent = "📂 自定义";
+            document
+              .querySelectorAll(".template-btn")
+              .forEach((b) => b.classList.remove("active"));
+            const existing = container.querySelector(
+              '[data-template="custom"]'
+            );
+            if (existing) {
+              existing.remove();
+            }
+            container.appendChild(customBtn);
+            customBtn.addEventListener("click", function () {
+              document
+                .querySelectorAll(".template-btn")
+                .forEach((b) => b.classList.remove("active"));
+              this.classList.add("active");
+              currentTemplate = "custom";
+              buildCertificate("custom");
+              showToast("📁 加载自定义模板");
+            });
+
+            buildCertificate("custom");
+            showToast("✅ 模板加载成功");
+          } catch (err) {
+            showToast("⚠️ 模板解析失败: " + err.message);
+          }
+        };
+        reader.readAsText(file);
+        this.value = "";
+      });
+
+      // ======================== 重置模板 ========================
+      resetTemplateBtn.addEventListener("click", function () {
+        if (confirm("确定要重置为默认模板吗？")) {
+          currentTemplate = "default";
+          document.querySelectorAll(".template-btn").forEach((b) => {
+            b.classList.remove("active");
+            if (b.dataset.template === "default") b.classList.add("active");
+          });
+          const customBtn = document.querySelector(
+            '[data-template="custom"]'
+          );
+          if (customBtn) customBtn.remove();
+          delete TEMPLATES["custom"];
+
+          medalInput.value = "1";
+          bannerInput.value = "Congratulation";
+          userIdInput.value = "8776843";
+          emailInput.value = "ken****nne@gmail.com";
+          bonusInput.value = "Upgrade Bonus";
+          levelInput.value = "LV1";
+          rewardInput.value = "50 USDT";
+
+          const defaultTemplate = TEMPLATES.default;
+          const keys = [
+            "medal",
+            "banner",
+            "userId",
+            "email",
+            "bonus",
+            "level",
+            "reward",
+          ];
+          keys.forEach((key) => {
+            const elem = defaultTemplate.elements[key];
+            if (elem) {
+              const config = elementConfig[key];
+              if (config) {
+                config.xInput.value = elem.left;
+                config.yInput.value = elem.top;
+                config.colorInput.value = elem.color;
+                config.sizeInput.value = elem.fontSize;
+                if (config.colorHex) {
+                  config.colorHex.textContent = elem.color;
+                }
+              }
+            }
+          });
+
+          currentAvatarUrl = "https://i.pravatar.cc/300?img=11";
+          currentBgUrl = "3.jpg";
+          buildCertificate("default");
+          showToast("🔄 已重置");
+        }
+      });
+
+      // ======================== 导出 ========================
+      function getExportCanvas(multiplier = 2) {
+        return new Promise((resolve) => {
+          canvas.renderAll();
+          setTimeout(() => {
+            const dataUrl = canvas.toDataURL({
+              format: "png",
+              quality: 1,
+              multiplier: multiplier,
+            });
+            resolve(dataUrl);
+          }, 100);
+        });
+      }
+
+      exportPngBtn.addEventListener("click", async function () {
+        const oldText = this.textContent;
+        this.textContent = "⏳ 生成中...";
+        this.disabled = true;
+        try {
+          const dataUrl = await getExportCanvas(2);
+          const link = document.createElement("a");
+          link.download = "Axis_Agent_Certificate.png";
+          link.href = dataUrl;
+          link.click();
+          showToast("✅ 导出成功");
+        } catch (err) {
+          showToast("⚠️ 导出失败: " + err.message);
+        } finally {
+          this.textContent = oldText;
+          this.disabled = false;
+        }
+      });
+
+      copyImageBtn.addEventListener("click", async function () {
+        const oldText = this.textContent;
+        this.textContent = "⏳ 生成中...";
+        this.disabled = true;
+        try {
+          const dataUrl = await getExportCanvas(2);
+          const res = await fetch(dataUrl);
+          const blob = await res.blob();
+          await navigator.clipboard.write([
+            new ClipboardItem({ [blob.type]: blob }),
+          ]);
+          showToast("✅ 已复制到剪贴板");
+          this.textContent = "✅ 已复制";
+          setTimeout(() => {
+            this.textContent = oldText;
+          }, 1500);
+        } catch (err) {
+          showToast("⚠️ 复制失败: " + err.message);
+          this.textContent = oldText;
+        } finally {
+          this.disabled = false;
+        }
+      });
+
+      // ======================== 快捷键 ========================
+      document.addEventListener("keydown", (e) => {
+        if (e.ctrlKey && e.key.toLowerCase() === "s") {
+          e.preventDefault();
+          exportPngBtn.click();
+        }
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "c") {
+          e.preventDefault();
+          copyImageBtn.click();
+        }
+        if (e.key === "Escape") {
+          clearHighlight();
+          document.activeElement?.blur();
+        }
+      });
+
+      // ======================== 启动 ========================
+      // 关键修复：使用多个延迟和 RAF 确保首次加载自适应成功
+      function init() {
+        buildCertificate("default");
+
+        // 多次尝试自适应，确保首次加载成功
+        setTimeout(() => {
+          requestAnimationFrame(fitCanvas);
+        }, 100);
+
+        setTimeout(() => {
+          requestAnimationFrame(fitCanvas);
+        }, 300);
+
+        setTimeout(() => {
+          requestAnimationFrame(fitCanvas);
+        }, 600);
+
+        setTimeout(() => {
+          requestAnimationFrame(fitCanvas);
+        }, 1000);
+
+        // 设置 ResizeObserver
+        setupResizeObserver();
+
+        console.log("🎨 Axis Certificate Platform ready!");
+      }
+
+      // DOM 完全加载后初始化
+      if (document.readyState === "complete") {
+        init();
+      } else {
+        window.addEventListener("load", init);
+      }
+
+      // 额外保险：页面完全加载后再次尝试
+      window.addEventListener("pageshow", function () {
+        setTimeout(fitCanvas, 200);
+      });
+
+    })();
+  </script>
+</body>
+
+</html>
