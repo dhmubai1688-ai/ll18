@@ -4,7 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>图片编辑</title>
-    <link rel="icon" href="https://raw.githubusercontent.com/dh1888/dh18/main/ico/DHPG.png" type="image/x-icon">
+    <link
+      rel="icon"
+      href="https://raw.githubusercontent.com/dh1888/dh18/main/ico/DHPG.png"
+      type="image/x-icon"
+    />
     <link
       href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
@@ -524,7 +528,7 @@
     <div class="container">
       <!-- Canvas -->
       <div class="canvas-wrapper">
-        <canvas id="certificateCanvas" width="1200" height="600"></canvas>
+        <canvas id="certificateCanvas" width="1200" height="700"></canvas>
       </div>
 
       <!-- 控制面板 -->
@@ -538,8 +542,6 @@
             <button class="template-btn active" data-template="default">
               默认
             </button>
-            <button class="template-btn" data-template="gold">金色</button>
-            <button class="template-btn" data-template="dark">暗黑</button>
           </div>
         </div>
 
@@ -630,7 +632,7 @@
                 type="number"
                 class="coord-input"
                 id="bannerX"
-                value="600"
+                value="595"
                 placeholder="X"
               />
             </div>
@@ -639,7 +641,7 @@
                 type="number"
                 class="coord-input"
                 id="bannerY"
-                value="491.5"
+                value="475.5"
                 placeholder="Y"
                 step="0.5"
               />
@@ -736,7 +738,7 @@
                 type="number"
                 class="coord-input"
                 id="emailY"
-                value="420"
+                value="410"
                 placeholder="Y"
               />
             </div>
@@ -784,7 +786,7 @@
                 type="number"
                 class="coord-input"
                 id="bonusY"
-                value="469"
+                value="454"
                 placeholder="Y"
               />
             </div>
@@ -827,7 +829,7 @@
                 type="number"
                 class="coord-input"
                 id="levelY"
-                value="555"
+                value="530"
                 placeholder="Y"
               />
             </div>
@@ -875,7 +877,7 @@
                 type="number"
                 class="coord-input"
                 id="rewardY"
-                value="555"
+                value="530"
                 placeholder="Y"
               />
             </div>
@@ -922,31 +924,31 @@
             bgImage: "3.jpg",
             elements: {
               medal: { left: 365, top: 312, fontSize: 48, color: "#ffdd87" },
-              banner: { left: 600, top: 491.5, fontSize: 22, color: "#111111" },
+              banner: { left: 590, top: 491.5, fontSize: 22, color: "#111111" },
               userId: {
-                left: 975,
+                left: 895,
                 top: 370,
                 fontSize: 20,
                 color: "#ffd978",
                 align: "left",
               },
               email: {
-                left: 1105,
-                top: 420,
+                left: 895,
+                top: 410,
                 fontSize: 20,
                 color: "#ffd978",
                 align: "left",
               },
               bonus: {
-                left: 1025,
-                top: 469,
+                left: 895,
+                top: 454,
                 fontSize: 18,
                 color: "#ffd978",
                 align: "left",
               },
               level: {
-                left: 890,
-                top: 555,
+                left: 825,
+                top: 530,
                 fontSize: 48,
                 color: "#e2c376",
                 align: "left",
@@ -954,95 +956,9 @@
               },
               reward: {
                 left: 910,
-                top: 555,
+                top: 530,
                 fontSize: 48,
                 color: "#e2c376",
-                align: "left",
-              },
-            },
-          },
-          gold: {
-            name: "金色",
-            bgImage: "3.jpg",
-            elements: {
-              medal: { left: 365, top: 312, fontSize: 48, color: "#FFD700" },
-              banner: { left: 600, top: 491.5, fontSize: 22, color: "#8B6914" },
-              userId: {
-                left: 895,
-                top: 370,
-                fontSize: 20,
-                color: "#FFD700",
-                align: "left",
-              },
-              email: {
-                left: 895,
-                top: 420,
-                fontSize: 20,
-                color: "#FFD700",
-                align: "left",
-              },
-              bonus: {
-                left: 895,
-                top: 469,
-                fontSize: 18,
-                color: "#FFD700",
-                align: "left",
-              },
-              level: {
-                left: 825,
-                top: 555,
-                fontSize: 48,
-                color: "#FFD700",
-                align: "left",
-              },
-              reward: {
-                left: 910,
-                top: 555,
-                fontSize: 48,
-                color: "#FFD700",
-                align: "left",
-              },
-            },
-          },
-          dark: {
-            name: "暗黑",
-            bgImage: "3.jpg",
-            elements: {
-              medal: { left: 365, top: 312, fontSize: 48, color: "#00d4ff" },
-              banner: { left: 600, top: 491.5, fontSize: 22, color: "#00d4ff" },
-              userId: {
-                left: 895,
-                top: 370,
-                fontSize: 20,
-                color: "#00d4ff",
-                align: "left",
-              },
-              email: {
-                left: 895,
-                top: 420,
-                fontSize: 20,
-                color: "#00d4ff",
-                align: "left",
-              },
-              bonus: {
-                left: 895,
-                top: 469,
-                fontSize: 18,
-                color: "#00d4ff",
-                align: "left",
-              },
-              level: {
-                left: 825,
-                top: 555,
-                fontSize: 48,
-                color: "#00d4ff",
-                align: "left",
-              },
-              reward: {
-                left: 910,
-                top: 555,
-                fontSize: 48,
-                color: "#00d4ff",
                 align: "left",
               },
             },
@@ -1150,7 +1066,7 @@
             colorInput: userIdColor,
             sizeInput: userIdSize,
             colorHex: userIdColorHex,
-            align: "right",
+            align: "left",
           },
           email: {
             textInput: emailInput,
@@ -1159,7 +1075,7 @@
             colorInput: emailColor,
             sizeInput: emailSize,
             colorHex: emailColorHex,
-            align: "right",
+            align: "left",
           },
           bonus: {
             textInput: bonusInput,
@@ -1168,7 +1084,7 @@
             colorInput: bonusColor,
             sizeInput: bonusSize,
             colorHex: bonusColorHex,
-            align: "right",
+            align: "left",
           },
           level: {
             textInput: levelInput,
@@ -1177,7 +1093,7 @@
             colorInput: levelColor,
             sizeInput: levelSize,
             colorHex: levelColorHex,
-            align: "right",
+            align: "left",
           },
           reward: {
             textInput: rewardInput,
@@ -1208,9 +1124,13 @@
         }
 
         // ======================== Fabric ========================
+        // 动态画布尺寸
+        let canvasWidth = 1200;
+        let canvasHeight = 700;
+
         const canvas = new fabric.Canvas(canvasEl, {
-          width: 1200,
-          height: 700,
+          width: canvasWidth,
+          height: canvasHeight,
           backgroundColor: "transparent",
           selection: false,
           renderOnAddRemove: true,
@@ -1239,14 +1159,14 @@
           color = "#ffd978",
           fontSize = 20,
           fontWeight = "600",
-          align = "center",
+          align = "left",
         ) {
           const alignMap = {
             left: { textAlign: "left", originX: "left" },
             right: { textAlign: "right", originX: "right" },
             center: { textAlign: "center", originX: "center" },
           };
-          const alignment = alignMap[align] || alignMap.center;
+          const alignment = alignMap[align] || alignMap.left;
 
           return {
             fill: color,
@@ -1274,27 +1194,35 @@
 
           const template = TEMPLATES[templateName] || TEMPLATES.default;
 
-          // 从UI更新模板
           updateTemplateFromUI(templateName);
 
           canvas.clear();
-          canvas.setBackgroundColor(
-            "#transparent",
-            canvas.renderAll.bind(canvas),
-          );
 
           fabric.Image.fromURL(
             currentBgUrl || template.bgImage || "3.jpg",
             (img) => {
               if (img) {
-                const scaleX = 1200 / img.width;
-                const scaleY = 700 / img.height;
-                const scale = Math.max(scaleX, scaleY);
+                // 关键：让画布尺寸适应背景图比例
+                const bgRatio = img.width / img.height;
+                const targetWidth = 1200;
+                const targetHeight = Math.round(targetWidth / bgRatio);
+
+                // 更新画布尺寸
+                canvasWidth = targetWidth;
+                canvasHeight = targetHeight;
+                canvas.setWidth(canvasWidth);
+                canvas.setHeight(canvasHeight);
+
+                // 更新 canvas 元素尺寸（显示）
+                canvasEl.width = canvasWidth;
+                canvasEl.height = canvasHeight;
+
+                // 背景图直接铺满
                 img.set({
-                  left: (1200 - img.width * scale) / 2,
-                  top: (700 - img.height * scale) / 2,
-                  scaleX: scale,
-                  scaleY: scale,
+                  left: 0,
+                  top: 0,
+                  scaleX: canvasWidth / img.width,
+                  scaleY: canvasHeight / img.height,
                   selectable: false,
                   evented: false,
                   originX: "left",
@@ -1318,8 +1246,63 @@
         }
 
         function buildLayers(template) {
-          buildAvatar(currentAvatarUrl, template);
-          buildTextLayers(template);
+          // 重新计算元素位置（按比例缩放）
+          const scaleX = canvasWidth / 1200;
+          const scaleY = canvasHeight / 700;
+
+          // 更新模板中的位置
+          const scaledTemplate = scaleTemplatePositions(
+            template,
+            scaleX,
+            scaleY,
+          );
+
+          buildTextLayers(scaledTemplate);
+          buildAvatar(currentAvatarUrl, scaledTemplate);
+
+          if (objects.bg) {
+            canvas.sendToBack(objects.bg);
+          }
+          if (objects.avatar) {
+            canvas.bringToFront(objects.avatar);
+          }
+          if (objects.avatarBorder) {
+            canvas.bringToFront(objects.avatarBorder);
+          }
+          if (objects.avatarGlow) {
+            canvas.bringToFront(objects.avatarGlow);
+          }
+
+          canvas.renderAll();
+          isBuilding = false;
+        }
+
+        // 按比例缩放元素位置
+        function scaleTemplatePositions(template, scaleX, scaleY) {
+          const scaled = JSON.parse(JSON.stringify(template));
+          const keys = [
+            "medal",
+            "banner",
+            "userId",
+            "email",
+            "bonus",
+            "level",
+            "reward",
+          ];
+          keys.forEach((key) => {
+            if (scaled.elements[key]) {
+              scaled.elements[key].left = Math.round(
+                scaled.elements[key].left * scaleX,
+              );
+              scaled.elements[key].top = Math.round(
+                scaled.elements[key].top * scaleY,
+              );
+              scaled.elements[key].fontSize = Math.round(
+                scaled.elements[key].fontSize * Math.min(scaleX, scaleY),
+              );
+            }
+          });
+          return scaled;
         }
 
         // ======================== 从UI更新模板 ========================
@@ -1365,9 +1348,12 @@
 
         // ======================== 头像构建 ========================
         function buildAvatar(url, template) {
-          const avatarRadius = 138;
-          const centerX = 460 + 138;
-          const centerY = 194 + 138;
+          const avatarRadius = Math.min(
+            138 * (canvasWidth / 1200),
+            138 * (canvasHeight / 700),
+          );
+          const centerX = (460 + 138) * (canvasWidth / 1200);
+          const centerY = (194 + 138) * (canvasHeight / 700);
 
           if (objects.avatar) {
             canvas.remove(objects.avatar);
@@ -1428,7 +1414,7 @@
                   originY: "center",
                   fill: "transparent",
                   stroke: "#eedd99",
-                  strokeWidth: 5,
+                  strokeWidth: 5 * (canvasWidth / 1200),
                   selectable: false,
                   evented: false,
                   shadow: new fabric.Shadow({
@@ -1449,7 +1435,7 @@
                   originY: "center",
                   fill: "transparent",
                   stroke: "rgba(255,215,100,0.1)",
-                  strokeWidth: 3,
+                  strokeWidth: 3 * (canvasWidth / 1200),
                   selectable: false,
                   evented: false,
                 });
@@ -1457,10 +1443,13 @@
                 canvas.add(glow);
 
                 if (objects.avatar) {
-                  canvas.moveTo(
-                    objects.avatar,
-                    canvas.getObjects().indexOf(objects.avatarBorder) - 1,
-                  );
+                  canvas.bringToFront(objects.avatar);
+                }
+                if (objects.avatarBorder) {
+                  canvas.bringToFront(objects.avatarBorder);
+                }
+                if (objects.avatarGlow) {
+                  canvas.bringToFront(objects.avatarGlow);
                 }
 
                 canvas.renderAll();
@@ -1486,49 +1475,17 @@
           const levelVal = levelInput.value || "LV1";
           const rewardVal = rewardInput.value || "50 USDT";
 
-          // ---- 奖牌（带渐变色 + Cinzel字体 + 立体阴影） ----
-          // 根据当前模板生成不同渐变色
-          function getMedalGradient(templateName) {
-            if (templateName === "gold") {
-              // 金色模板 - 亮金渐变
-              return new fabric.Gradient({
-                type: "linear",
-                coords: { x1: 0, y1: 0, x2: 0, y2: 1 },
-                colorStops: [
-                  { offset: 0, color: "#fff7b0" },
-                  { offset: 0.3, color: "#f5c842" },
-                  { offset: 0.7, color: "#b8860b" },
-                  { offset: 1, color: "#ffd700" },
-                ],
-              });
-            } else if (templateName === "dark") {
-              // 暗黑模板 - 冰蓝渐变
-              return new fabric.Gradient({
-                type: "linear",
-                coords: { x1: 0, y1: 0, x2: 0, y2: 1 },
-                colorStops: [
-                  { offset: 0, color: "#a8e8ff" },
-                  { offset: 0.3, color: "#4dc3e8" },
-                  { offset: 0.7, color: "#0088b8" },
-                  { offset: 1, color: "#66d0ff" },
-                ],
-              });
-            } else {
-              // 默认模板 - 暖金渐变
-              return new fabric.Gradient({
-                type: "linear",
-                coords: { x1: 0, y1: 0, x2: 0, y2: 1 },
-                colorStops: [
-                  { offset: 0, color: "#fff5b0" },
-                  { offset: 0.3, color: "#d89b22" },
-                  { offset: 0.7, color: "#8b5200" },
-                  { offset: 1, color: "#ffd966" },
-                ],
-              });
-            }
-          }
-
-          const medalGradient = getMedalGradient(currentTemplate);
+          // 奖牌渐变色
+          const medalGradient = new fabric.Gradient({
+            type: "linear",
+            coords: { x1: 0, y1: 0, x2: 0, y2: 1 },
+            colorStops: [
+              { offset: 0, color: "#fff5b0" },
+              { offset: 0.3, color: "#d89b22" },
+              { offset: 0.7, color: "#8b5200" },
+              { offset: 1, color: "#ffd966" },
+            ],
+          });
 
           const medal = new fabric.Text(medalVal, {
             left: elems.medal.left,
@@ -1540,15 +1497,13 @@
             textAlign: "center",
             originX: "center",
             originY: "center",
-            // 立体阴影（向右下偏移）
             shadow: new fabric.Shadow({
               color: "rgba(0,0,0,0.6)",
               blur: 8,
               offsetX: 3,
               offsetY: 5,
             }),
-            // 描边增加清晰度
-            stroke: currentTemplate === "dark" ? "#005577" : "#6b3b00",
+            stroke: "#6b3b00",
             strokeWidth: 0.5,
             selectable: true,
             evented: true,
@@ -1557,17 +1512,17 @@
           objects.medal = medal;
           canvas.add(medal);
 
-          // ---- 标题横幅 ----
+          // 标题背景横幅
           const bannerBg = new fabric.Rect({
-            left: 470,
-            top: 469,
-            width: 260,
-            height: 45,
-            rx: 30,
-            ry: 30,
+            left: 468 * (canvasWidth / 1200),
+            top: 449 * (canvasHeight / 700),
+            width: 260 * (canvasWidth / 1200),
+            height: 45 * (canvasHeight / 700),
+            rx: 30 * (canvasWidth / 1200),
+            ry: 30 * (canvasHeight / 700),
             fill: new fabric.Gradient({
               type: "linear",
-              coords: { x1: 0, y1: 0, x2: 1, y2: 0 },
+              coords: { x1: 0, y1: 0, x2: 0, y2: 1 },
               colorStops: [
                 { offset: 0, color: "#b8860b" },
                 { offset: 0.5, color: "#ffe9a8" },
@@ -1605,7 +1560,6 @@
           objects.banner = bannerText;
           canvas.add(bannerText);
 
-          // ---- 用户ID ----
           const userId = new fabric.Text(userIdVal, {
             left: elems.userId.left,
             top: elems.userId.top,
@@ -1613,13 +1567,12 @@
               elems.userId.color,
               elems.userId.fontSize,
               "600",
-              elems.userId.align || "right",
+              elems.userId.align || "left",
             ),
           });
           objects.userId = userId;
           canvas.add(userId);
 
-          // ---- 邮箱 ----
           const email = new fabric.Text(emailVal, {
             left: elems.email.left,
             top: elems.email.top,
@@ -1627,13 +1580,12 @@
               elems.email.color,
               elems.email.fontSize,
               "600",
-              elems.email.align || "right",
+              elems.email.align || "left",
             ),
           });
           objects.email = email;
           canvas.add(email);
 
-          // ---- 奖励标签 ----
           const bonus = new fabric.Text(bonusVal, {
             left: elems.bonus.left,
             top: elems.bonus.top,
@@ -1641,13 +1593,12 @@
               elems.bonus.color,
               elems.bonus.fontSize,
               "700",
-              elems.bonus.align || "right",
+              elems.bonus.align || "left",
             ),
           });
           objects.bonus = bonus;
           canvas.add(bonus);
 
-          // ---- 等级 ----
           const level = new fabric.Text(levelVal, {
             left: elems.level.left,
             top: elems.level.top,
@@ -1655,13 +1606,12 @@
               elems.level.color,
               elems.level.fontSize,
               "900",
-              elems.level.align || "right",
+              elems.level.align || "left",
             ),
           });
           objects.level = level;
           canvas.add(level);
 
-          // ---- 奖励金额 ----
           const reward = new fabric.Text(rewardVal, {
             left: elems.reward.left,
             top: elems.reward.top,
@@ -1677,7 +1627,6 @@
 
           enableDragging();
           canvas.renderAll();
-          isBuilding = false;
         }
 
         // ======================== 启用拖拽 ========================
@@ -1700,7 +1649,6 @@
             });
           });
 
-          // 拖拽时同步更新坐标输入框
           canvas.on("object:modified", function (e) {
             const target = e.target;
             if (target && target.type === "text") {
@@ -1710,7 +1658,6 @@
                 if (config) {
                   config.xInput.value = Math.round(target.left);
                   config.yInput.value = Math.round(target.top);
-                  // 更新模板
                   const template = TEMPLATES[currentTemplate];
                   if (template && template.elements[key]) {
                     template.elements[key].left = Math.round(target.left);
@@ -1721,7 +1668,6 @@
             }
           });
 
-          // 双击编辑
           canvas.on("mouse:dblclick", function (opt) {
             const target = opt.target;
             if (!target || target.type !== "text") {
@@ -1773,7 +1719,7 @@
           });
         }
 
-        // ======================== 更新文字（内容） ========================
+        // ======================== 更新文字 ========================
         function updateText(objectKey, value) {
           const obj = objects[objectKey];
           if (obj && obj.type === "text") {
@@ -1782,7 +1728,6 @@
           }
         }
 
-        // 内容输入监听
         medalInput.addEventListener("input", () =>
           updateText("medal", medalInput.value),
         );
@@ -1805,7 +1750,7 @@
           updateText("reward", rewardInput.value),
         );
 
-        // ======================== 更新位置、颜色、大小 ========================
+        // ======================== 更新样式 ========================
         function updateTextStyle(key) {
           const obj = objects[key];
           if (!obj || obj.type !== "text") return;
@@ -1825,12 +1770,10 @@
             fontSize: size,
           });
 
-          // 更新十六进制显示
           if (config.colorHex) {
             config.colorHex.textContent = color;
           }
 
-          // 同时更新模板
           const template = TEMPLATES[currentTemplate];
           if (template && template.elements[key]) {
             template.elements[key].left = x;
@@ -1842,7 +1785,6 @@
           canvas.renderAll();
         }
 
-        // 绑定所有控件事件
         Object.keys(elementConfig).forEach((key) => {
           const config = elementConfig[key];
           config.xInput.addEventListener("input", () => updateTextStyle(key));
@@ -1854,7 +1796,6 @@
             updateTextStyle(key),
           );
 
-          // 初始化十六进制显示
           if (config.colorHex) {
             config.colorHex.textContent = config.colorInput.value;
           }
@@ -1915,7 +1856,7 @@
           showToast("🔄 已重置头像");
         });
 
-        // ======================== 背景图片上传 ========================
+        // ======================== 背景上传 ========================
         uploadBgHeaderBtn.addEventListener("click", () => bgInput.click());
 
         bgInput.addEventListener("change", function (e) {
@@ -1943,7 +1884,6 @@
             this.classList.add("active");
             currentTemplate = this.dataset.template;
 
-            // 更新UI控件
             const template = TEMPLATES[currentTemplate];
             if (template) {
               const keys = [
@@ -1977,7 +1917,7 @@
           });
         });
 
-        // ======================== 保存模板 (JSON) ========================
+        // ======================== 保存模板 ========================
         saveTemplateBtn.addEventListener("click", function () {
           try {
             updateTemplateFromUI(currentTemplate);
@@ -2001,7 +1941,7 @@
                   top: Math.round(obj.top),
                   fontSize: obj.fontSize,
                   color: obj.fill,
-                  align: obj.textAlign || "center",
+                  align: obj.textAlign || "left",
                 };
               }
             });
@@ -2050,7 +1990,6 @@
               TEMPLATES["custom"] = template;
               currentTemplate = "custom";
 
-              // 更新UI
               const keys = [
                 "medal",
                 "banner",
@@ -2125,7 +2064,6 @@
             if (customBtn) customBtn.remove();
             delete TEMPLATES["custom"];
 
-            // 重置所有输入框
             medalInput.value = "1";
             bannerInput.value = "Congratulation";
             userIdInput.value = "8776843";
@@ -2134,7 +2072,6 @@
             levelInput.value = "LV1";
             rewardInput.value = "50 USDT";
 
-            // 重置坐标、颜色、大小
             const defaultTemplate = TEMPLATES.default;
             const keys = [
               "medal",
@@ -2247,7 +2184,7 @@
           const wrapper = canvasEl.parentElement;
           const wrapperWidth = wrapper.clientWidth - 24;
           const maxWidth = Math.min(wrapperWidth, 1000);
-          const ratio = 1200 / 700;
+          const ratio = canvasWidth / canvasHeight;
           const displayWidth = Math.max(300, maxWidth);
           const displayHeight = displayWidth / ratio;
 
@@ -2268,8 +2205,8 @@
         console.log("  - 颜色选择器调整文字颜色");
         console.log("  - 数字输入调整文字大小");
         console.log("  - 保存/加载模板 JSON");
-        console.log("  - 3种预设模板切换");
         console.log("  - 上传自定义头像（自动填满圆形）");
+        console.log("  - 背景自动适配比例，无黑边无裁剪");
       })();
     </script>
   </body>
