@@ -1318,29 +1318,8 @@
         }
 
         function buildLayers(template) {
-          // 先构建文字层，再构建头像层（头像在文字之上）
-          buildTextLayers(template);
-          // 头像在文字之上，但在最上层
           buildAvatar(currentAvatarUrl, template);
-          
-          // 调整层级：确保背景在最底层
-          if (objects.bg) {
-            canvas.sendToBack(objects.bg);
-          }
-          
-          // 头像在最上层
-          if (objects.avatar) {
-            canvas.bringToFront(objects.avatar);
-          }
-          if (objects.avatarBorder) {
-            canvas.bringToFront(objects.avatarBorder);
-          }
-          if (objects.avatarGlow) {
-            canvas.bringToFront(objects.avatarGlow);
-          }
-          
-          canvas.renderAll();
-          isBuilding = false;
+          buildTextLayers(template);
         }
 
         // ======================== 从UI更新模板 ========================
@@ -1477,15 +1456,11 @@
                 objects.avatarGlow = glow;
                 canvas.add(glow);
 
-                // 将头像移到最上层
                 if (objects.avatar) {
-                  canvas.bringToFront(objects.avatar);
-                }
-                if (objects.avatarBorder) {
-                  canvas.bringToFront(objects.avatarBorder);
-                }
-                if (objects.avatarGlow) {
-                  canvas.bringToFront(objects.avatarGlow);
+                  canvas.moveTo(
+                    objects.avatar,
+                    canvas.getObjects().indexOf(objects.avatarBorder) - 1,
+                  );
                 }
 
                 canvas.renderAll();
@@ -1565,12 +1540,14 @@
             textAlign: "center",
             originX: "center",
             originY: "center",
+            // 立体阴影（向右下偏移）
             shadow: new fabric.Shadow({
               color: "rgba(0,0,0,0.6)",
               blur: 8,
               offsetX: 3,
               offsetY: 5,
             }),
+            // 描边增加清晰度
             stroke: currentTemplate === "dark" ? "#005577" : "#6b3b00",
             strokeWidth: 0.5,
             selectable: true,
@@ -1700,6 +1677,7 @@
 
           enableDragging();
           canvas.renderAll();
+          isBuilding = false;
         }
 
         // ======================== 启用拖拽 ========================
