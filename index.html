@@ -2016,7 +2016,7 @@
                     if (typeof saved.avatarUrl === 'string') currentAvatarUrl = saved.avatarUrl;
                     if (typeof saved.bgUrl === 'string') currentBgUrl = saved.bgUrl;
                     setEditorExpanded(saved.expanded !== false);
-                    setSaveStatus('已恢复上次编辑 · 自动保存已开启');
+                    setSaveStatus('已自动保存到此浏览器');
                 } catch (_) {
                     setSaveStatus('无法读取本地记录；仍可编辑、导出图片', true);
                 }
