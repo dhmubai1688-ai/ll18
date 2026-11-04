@@ -91,7 +91,7 @@
             width: 100%;
             height: auto;
             max-width: 900px;
-            aspect-ratio: 1280 / 720;
+            /* 比例由实际画布尺寸统一计算，避免固定比例覆盖上传图片。 */
             cursor: default;
         }
 
@@ -512,28 +512,192 @@
                 max-width: 1000px;
             }
         }
+
+        /* 编辑面板：保留所有原控件，增加清晰分组与触控区域。 */
+        .panel {background:#141d2d;border:1px solid #ffffff12;border-radius:18px;padding:22px;min-width:360px;max-width:460px;color:#e7eef9;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-height:88vh;scrollbar-gutter:stable;box-shadow:0 16px 50px #0004;}
+        .editor-heading {padding-bottom:20px;margin-bottom:20px;border-bottom:1px solid #ffffff12;}
+        .editor-eyebrow {font-size:9px;letter-spacing:2.5px;color:#7996bd;font-weight:700;}
+        .panel .editor-heading h2 {font-size:23px;letter-spacing:0;color:#f2f6fc;margin:9px 0 7px;}
+        .editor-heading p,.editor-note {font-size:11px;line-height:1.7;color:#8fa0ba;margin:0;}
+        .panel-group {min-width:0;}
+        .panel>.panel-group {margin-bottom:18px;}
+        .panel .panel-group>label {font-size:12px;color:#c9d6ea;letter-spacing:0;text-transform:none;margin-bottom:10px;}
+        .text-card,.avatar-card {background:#0e1726;border:1px solid #ffffff0d;border-radius:13px;padding:16px;margin-bottom:16px;}
+        .panel .text-card>label {font-size:13px;font-weight:700;color:#e9f1ff;margin-bottom:15px;}
+        .panel .panel-row {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:end;}
+        .panel .panel-row>.panel-group:first-child {grid-column:1/-1;}
+        .panel .panel-row>.panel-group {margin-bottom:0;}
+        .panel .field-caption {display:block;font-size:10px!important;color:#8499b8!important;font-weight:500;margin-bottom:6px!important;}
+        .panel .panel-group input,.panel .coord-input,.number-unit input {width:100%;height:38px;padding:8px 10px;border:1px solid #ffffff18;border-radius:8px;background:#192538;color:#f0f5ff;font:13px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;outline:none;transition: .15s;}
+        .panel input:focus-visible {border-color:#7baaff;box-shadow:0 0 0 3px #559aff20;}
+        .panel .color-picker-wrapper {height:38px;gap:8px;}
+        .panel .color-picker-wrapper:before {content:"颜色";font-size:10px;color:#8499b8;}
+        .panel .color-picker-wrapper input[type=color] {width:34px;height:32px;padding:3px;flex-shrink:0;cursor:pointer;}
+        .panel .color-hex {font-size:10px;color:#9fb1cc;min-width:0;}
+        .panel .btn,.panel .btn-upload {padding:11px 12px;min-width:0;border-radius:8px;font:600 12px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;transition:.15s;}
+        .panel .btn-upload,.panel .btn-success {background:#3479e6;color:#fff;}
+        .panel .btn-primary {background:#253c5e;color:#cbe0ff;}
+        .panel .btn-danger {background:#402632;color:#ffb7c5;}
+        .panel .btn:hover,.panel .btn-upload:hover {filter:brightness(1.12);transform:none;box-shadow:none;}
+        .panel .template-btn {padding:8px 16px;font-size:12px;border-radius:8px;}
+        .panel .template-btn.active {background:#263d5e;color:#c3dcff;border-color:#527bad;}
+        .panel .section-divider {border-color:#ffffff10;margin:20px 0 14px;padding-top:17px;}
+        .panel .section-title {color:#9eb4d3;font-size:11px;letter-spacing:0;}
+        .card-heading {display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;font-size:13px;font-weight:700;}
+        .subtle-btn {border:1px solid #ffffff18;border-radius:6px;background:#1b2a40;color:#a9c9f5;font-size:10px;padding:6px 9px;cursor:pointer;}
+        .avatar-control {margin:14px 0;}
+        .control-heading {display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+        .control-heading label {font-size:11px;color:#b1c1d9;}
+        .number-unit {display:flex;align-items:center;gap:7px;color:#7087a7;font-size:10px;}
+        .number-unit input {width:82px;height:32px;padding:5px 8px;}
+        .avatar-control input[type=range] {width:100%;accent-color:#7baaff;cursor:pointer;height:20px;}
+        .panel .export-actions {position:sticky;bottom:-22px;background:#141d2df5;padding:15px 0;margin-top:12px!important;border-top:1px solid #ffffff12;z-index:2;}
+        .panel .shortcuts {border:0;color:#8b9ab1;font-size:10px;gap:9px;margin-top:0;}
+        .panel .shortcuts kbd {color:#afc2df;}
+        @media(max-width:860px){.panel{min-width:0;max-width:none;max-height:none;width:100%;padding:18px}.panel .export-actions{bottom:0}.panel .panel-row{flex-wrap:initial}}
+
+
+        /* 右侧紧凑编辑；不改变左侧预览的宽度、缩放或图片。 */
+        .panel {padding:14px;}
+        .panel [hidden] {display:none!important;}
+        .panel-toolbar {display:flex;align-items:center;justify-content:space-between;padding:0 0 10px;margin-bottom:12px;border-bottom:1px solid #ffffff0c;}
+        .mode-label {font-size:11px;font-weight:600;color:#8ea7ca;}
+        .collapse-toggle {display:inline-flex;align-items:center;gap:8px;border:1px solid #6c9ee02b;border-radius:7px;background:#20324b;color:#c4dcff;padding:7px 12px;font-size:11px;font-weight:600;cursor:pointer;}
+        .collapse-toggle:hover {background:#2a4161;}
+        .collapse-toggle:focus-visible {outline:2px solid #7baaff;outline-offset:2px;}
+        .toggle-chevron {font-size:15px;line-height:12px;transition:transform .15s;}
+        .panel.is-collapsed .toggle-chevron {transform:rotate(180deg);}
+        .panel>.panel-group {margin-bottom:10px;}
+        .panel .text-card,.panel .avatar-card {padding:12px;margin-bottom:10px;border-radius:10px;}
+        .panel .text-card>label {margin-bottom:8px;font-size:12px;}
+        .panel .panel-row {gap:8px;}
+        .panel .content-caption {display:none;}
+        .panel .panel-group input,.panel .coord-input {height:34px;padding:6px 9px;}
+        .panel .field-caption {margin-bottom:4px!important;font-size:10px!important;}
+        .panel .color-picker-wrapper {height:34px;}
+        .panel .btn,.panel .btn-upload {padding:9px 11px;}
+        .panel .avatar-control {margin:9px 0;}
+        .panel .control-heading {margin-bottom:3px;}
+        .panel .avatar-control input[type=range] {height:16px;}
+        .panel .editor-note {font-size:10px;line-height:1.5;}
+        .panel .section-divider {margin:12px 0 10px;padding-top:10px;}
+        .panel .section-title {margin-bottom:0;font-size:10px;}
+        .panel .export-actions {bottom:-14px;padding:10px 0;margin-top:8px!important;}
+        .panel .shortcuts {font-size:9px;gap:6px;padding-top:6px;}
+        .panel.is-collapsed .text-card {display:grid;grid-template-columns:70px minmax(0,1fr);align-items:center;gap:8px;padding:10px 12px;}
+        .panel.is-collapsed .text-card>label {margin:0;}
+        .panel.is-collapsed .panel-row {display:block;}
+
+        .mode-stack {display:flex;flex-direction:column;gap:4px;}
+        #saveStatus {font-size:9px;color:#86b9a5;line-height:1.4;}
+        #saveStatus[data-error="true"] {color:#ffb58a;}
+
+        /* 左右伸缩：右侧保留快捷输入，左侧使用剩余宽度等比例显示。 */
+        .container {display:flex;flex-wrap:nowrap;align-items:flex-start;gap:12px;}
+        .canvas-wrapper {flex:1 1 0;min-width:0;overflow:hidden;}
+        #certificateCanvas {max-width:none;}
+        .panel {flex:0 0 420px;width:420px;min-width:0;max-width:none;box-sizing:border-box;}
+        .panel.is-collapsed {flex-basis:240px;width:240px;}
+        .panel .toggle-chevron {font-size:20px;line-height:12px;transform:none;}
+        .panel.is-collapsed .toggle-chevron {transform:rotate(180deg);}
+        .panel .avatar-control {display:grid;grid-template-columns:48px minmax(0,1fr) 83px;align-items:center;gap:9px;margin:10px 0;}
+        .panel .avatar-control>label {font-size:11px;color:#a8bedb;white-space:nowrap;}
+        .panel .avatar-control input[type=range] {min-width:0;width:100%;margin:0;}
+        .panel .number-unit {gap:4px;}
+        .panel .number-unit input {width:65px;height:30px;padding:4px 6px;}
+        .panel .text-card,.panel.is-collapsed .text-card {display:block;padding:10px;border-radius:9px;}
+        .panel .text-main-row {display:grid;grid-template-columns:58px minmax(0,1fr) 30px;align-items:center;gap:8px;}
+        .panel .text-main-row>label {font-size:11px;color:#c9d7ec;font-weight:600;white-space:nowrap;margin:0;}
+        .panel .text-main-row input[type=text] {min-width:0;width:100%;height:32px;}
+        .panel .inline-color {height:30px;}
+        .panel .inline-color input[type=color] {display:block;width:30px;height:30px;padding:2px;border-radius:6px;cursor:pointer;}
+        .panel .inline-color .color-hex {display:none;}
+        .panel .text-detail-row {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding-top:8px;}
+        .panel .compact-field {display:flex;align-items:center;gap:5px;min-width:0;}
+        .panel .compact-field label {font-size:10px;color:#8ea5c5;white-space:nowrap;margin:0;}
+        .panel .compact-field input {width:100%;min-width:0;height:30px;padding:4px 6px;font-size:11px;}
+        .panel.is-collapsed .text-main-row {grid-template-columns:49px minmax(0,1fr) 26px;gap:5px;}
+        .panel.is-collapsed .inline-color input[type=color] {width:26px;}
+        .panel.is-collapsed .btn {font-size:10px;}
+        @media(min-width:861px) and (max-width:1100px) {.panel{flex-basis:380px;width:380px}.panel.is-collapsed{flex-basis:230px;width:230px}}
+        @media(max-width:860px) {.container{flex-direction:column}.canvas-wrapper{width:100%;flex:auto}.panel,.panel.is-collapsed{width:100%;flex:auto;max-height:none}.panel .text-main-row,.panel.is-collapsed .text-main-row{grid-template-columns:58px minmax(0,1fr) 30px}}
+
+        /* 预览高度始终由图片比例决定，不受右侧面板高度影响。 */
+        .container {align-items:flex-start;}
+        .canvas-wrapper {align-self:flex-start;height:auto;align-items:flex-start;}
+        .canvas-wrapper .canvas-container {flex:0 0 auto;max-width:none;max-height:none;}
+        #certificateCanvas {max-width:none;max-height:none;aspect-ratio:auto;}
+
+        .panel .text-main-row {grid-template-columns:58px minmax(0,1fr) 106px;}
+        .panel .inline-color {display:flex;align-items:center;gap:5px;}
+        .panel .inline-color input.hex-code-input {width:71px;min-width:0;height:30px;padding:4px;font-family:monospace;font-size:11px;}
+        .panel .inline-color input.hex-code-input[aria-invalid="true"] {border-color:#ff9a8c;}
+        .panel.is-collapsed .text-main-row {grid-template-columns:49px minmax(0,1fr) 26px;}
+        .panel.is-collapsed .inline-color {position:relative;}
+        .panel.is-collapsed .text-main-row {padding-bottom:35px;position:relative;}
+        .panel.is-collapsed .inline-color input.hex-code-input {position:absolute;right:0;top:36px;width:100px;}
+
+        /* 仅修改复制按钮背景。 */
+        #copyImageBtn { background: linear-gradient(135deg, #15803d 0%, #22c55e 100%); }
+
+        .panel-toolbar {gap:8px;flex-wrap:wrap;}
+        .panel-toolbar .mode-stack {flex:1 1 auto;min-width:0;}
+        .panel-header-actions {display:flex;align-items:center;gap:5px;}
+        .panel .panel-header-actions .btn {flex:none;padding:7px 8px;font-size:10px;white-space:nowrap;}
+        .panel-toolbar .collapse-toggle {padding:7px 9px;white-space:nowrap;}
+        .panel.is-collapsed .panel-toolbar .mode-stack {flex:1 1 120px;order:0;}
+        .panel.is-collapsed .panel-toolbar .collapse-toggle {order:1;}
+        .panel.is-collapsed .panel-header-actions {order:2;flex-basis:100%;}
+        .panel.is-collapsed .panel-header-actions .btn {flex:1;}
+
+        /* 右侧可显示更多设置；较小屏幕仍可滚动。 */
+        .panel {max-height:850px;max-height:min(850px, calc(100dvh - 20px));overflow-y:auto;}
+        .panel .text-card.account-card {background:#16263a;border-color:#365477;}
+        .panel .text-card.level-card {background:#252038;border-color:#514367;}
+        .panel .text-card.reward-card {background:#192e29;border-color:#365b4e;}
+        @media(max-width:860px) {.panel,.panel.is-collapsed {max-height:none;}}
+
+        /* 仅增强重置按钮的可读性。 */
+        .panel .panel-header-actions #resetTemplateBtn {
+            background:linear-gradient(135deg,#a92339,#d83c50);
+            color:#ffffff;
+            border:1px solid #ff8b98;
+            font-weight:700;
+            font-size:11px;
+            box-shadow:0 2px 6px rgba(0,0,0,.2);
+        }
+        .panel .panel-header-actions #resetTemplateBtn:hover {
+            background:linear-gradient(135deg,#bd2c43,#e64a60);
+            filter:none;
+            border-color:#ffb2bb;
+        }
+        .panel .panel-header-actions #resetTemplateBtn:focus-visible {
+            outline:2px solid #ffd5db;
+            outline-offset:2px;
+        }
+
+        #resetDialog {margin:auto;width:min(400px,calc(100vw - 32px));max-height:calc(100dvh - 40px);padding:0;border:1px solid #43516a;border-radius:18px;background:#172235;color:#edf3ff;box-shadow:0 28px 90px #0009;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;}
+        #resetDialog::backdrop {background:rgba(3,8,18,.72);backdrop-filter:blur(5px);}
+        .reset-dialog-content {padding:26px;}
+        .reset-dialog-icon {display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:#4d2937;color:#ffadb9;font-size:28px;margin-bottom:16px;}
+        #resetDialog h2 {font-size:20px;margin:0 0 12px;}
+        #resetDialog p {font-size:13px;line-height:1.8;color:#aebdd3;margin:0;}
+        .reset-dialog-actions {display:flex;gap:10px;margin-top:24px;}
+        .reset-dialog-actions button {flex:1;padding:11px 14px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;}
+        .reset-dialog-cancel {border:1px solid #50617b;background:#26364e;color:#e2ebfa;}
+        .reset-dialog-confirm {border:1px solid #ff8b98;background:linear-gradient(135deg,#a92339,#d83c50);color:white;}
+        .reset-dialog-actions button:hover {filter:brightness(1.12);}
+        .reset-dialog-actions button:focus-visible {outline:2px solid #9fc4ff;outline-offset:3px;}
+
+        .background-size-hint {display:flex;flex-direction:column;gap:2px;color:#8fa6c4;font-size:9px;line-height:1.3;white-space:nowrap;margin-right:2px;}
+        .background-size-hint span {color:#bdcee4;font-size:9px;font-variant-numeric:tabular-nums;}
+        .panel.is-collapsed .background-size-hint {font-size:8px;}
+        .panel.is-collapsed .background-size-hint span {font-size:8px;}
     </style>
 </head>
 
 <body>
     <div id="toast" class="toast">✅ 操作成功</div>
-
-    <!-- Header -->
-    <div class="header">
-        <h1>🎨 图片编辑</h1>
-        <div class="header-actions">
-            <button class="btn btn-info" id="saveTemplateBtn">💾 保存模板</button>
-            <button class="btn btn-warning" id="loadTemplateBtn">
-                📂 加载模板
-            </button>
-            <button class="btn btn-success" id="uploadBgHeaderBtn">
-                🖼️ 上传背景
-            </button>
-            <button class="btn btn-danger" id="resetTemplateBtn">🔄 重置</button>
-            <input type="file" id="templateFileInput" accept=".json" style="display: none" />
-            <input type="file" id="bgInput" accept="image/*" style="display: none" />
-        </div>
-    </div>
 
     <div class="container">
         <!-- Canvas -->
@@ -542,12 +706,17 @@
         </div>
 
         <!-- 控制面板 -->
-        <div class="panel">
-            <h2>📐 模板编辑</h2>
+        <div class="panel" id="editorPanel">
+            <div class="panel-toolbar">
+                <div class="mode-stack"><span id="editorModeLabel" class="mode-label">全部设置</span><span id="saveStatus" role="status" aria-live="polite">正在恢复本地记录…</span></div>
+                <div class="panel-header-actions"><span class="background-size-hint" title="建议使用 1280 × 720 像素（16:9）的背景图片；其他尺寸也会等比例显示。">建议尺寸<span>1280 × 720 px</span></span><button class="btn btn-success" id="uploadBgHeaderBtn">
+                🖼️ 上传背景
+            </button><button class="btn btn-danger" id="resetTemplateBtn">🔄 重置</button></div>
+                <button id="toggleEditorBtn" class="collapse-toggle" type="button" aria-expanded="true" aria-controls="editorPanel"><span id="toggleEditorText">收起</span><span class="toggle-chevron" aria-hidden="true">›</span></button>
+            </div>
 
-            <!-- 模板选择 -->
-            <div class="panel-group">
-                <label>📁 模板</label>
+            <!-- 保留模板切换绑定以兼容保存/加载；不占用编辑面板空间。 -->
+            <div class="panel-group" hidden>
                 <div class="template-selector">
                     <button class="template-btn active" data-template="default">
                         默认
@@ -559,101 +728,68 @@
                 <label>👤 头像</label>
                 <div class="btn-group">
                     <button class="btn-upload" id="uploadAvatarBtn">📷 上传头像</button>
-                    <button class="btn btn-danger" id="resetAvatarBtn" style="flex: 0.3">
+                    <button class="btn btn-danger" id="resetAvatarBtn" title="恢复默认头像" aria-label="恢复默认头像" style="flex: 0.3">
                         ✕
                     </button>
                 </div>
                 <input type="file" id="avatarInput" accept="image/*" style="display: none" />
             </div>
 
+
+            <section class="avatar-card advanced-control" aria-label="头像位置和大小">
+                <div class="card-heading"><span>头像布局</span><button type="button" id="avatarLayoutReset" class="subtle-btn">恢复位置</button></div>
+                <p class="editor-note">位置以头像中心为准；大小为头像直径。</p>
+<div class="avatar-control"><label for="avatarX">横向 X</label><input aria-label="横向位置 X滑块" id="avatarXRange" type="range" min="0" max="1280" value="255" step="1"><div class="number-unit"><input id="avatarX" type="number" value="255" min="0" max="1280" step="1"><span>px</span></div></div><div class="avatar-control"><label for="avatarY">纵向 Y</label><input aria-label="纵向位置 Y滑块" id="avatarYRange" type="range" min="0" max="720" value="380" step="1"><div class="number-unit"><input id="avatarY" type="number" value="380" min="0" max="720" step="1"><span>px</span></div></div><div class="avatar-control"><label for="avatarDiameter">大小</label><input aria-label="头像大小滑块" id="avatarDiameterRange" type="range" min="20" max="1280" value="318" step="1"><div class="number-unit"><input id="avatarDiameter" type="number" value="318" min="20" max="1280" step="1"><span>px</span></div></div><p class="editor-note">可直接拖动左侧头像，或使用滑块、数字精确定位。</p></section>
             <!-- ===== 文字样式调整 ===== -->
-            <div class="section-divider">
+            <div class="section-divider advanced-control">
                 <div class="section-title">
                     ✏️ 文字编辑 (内容 · 位置 · 颜色 · 大小)
                 </div>
             </div>
 
             <!-- ===== 用户ID ===== -->
-            <div class="panel-group">
-                <label>🆔 UID</label>
-                <div class="panel-row">
-                    <div class="panel-group" style="flex: 1.2">
-                        <input type="text" id="userIdInput" value="8776843" data-key="userId" />
-                    </div>
-                    <div class="panel-group tiny">
-                        <input type="number" class="coord-input" id="userIdX" value="755" placeholder="X" />
-                    </div>
-                    <div class="panel-group tiny">
-                        <input type="number" class="coord-input" id="userIdY" value="346" placeholder="Y" />
-                    </div>
-                    <div class="panel-group tiny">
-                        <div class="color-picker-wrapper">
-                            <input type="color" id="userIdColor" value="#ff0000" />
-                            <span class="color-hex" id="userIdColorHex">#ff0000</span>
-                        </div>
-                    </div>
-                    <div class="panel-group tiny">
-                        <input type="number" id="userIdSize" value="34" min="10" max="80" />
-                    </div>
+            <div class="panel-group text-card account-card">
+                <div class="text-main-row">
+                    <label for="userIdInput">会员账号</label>
+                    <input type="text" id="userIdInput" value="8776843" data-key="userId" />
+                    <div class="inline-color" title="会员账号颜色"><input aria-label="UID颜色" type="color" id="userIdColor" value="#ff0000" /><span class="color-hex" id="userIdColorHex">#ff0000</span><input class="hex-code-input" id="userIdColorCode" type="text" value="#FF0000" maxlength="7" spellcheck="false" autocomplete="off" aria-label="会员账号颜色代码" title="输入十六进制颜色，例如 #FF0000" placeholder="#FF0000" /></div>
+                </div>
+                <div class="text-detail-row advanced-control">
+<div class="compact-field"><label for="userIdX">X</label><input type="number" class="coord-input" id="userIdX" value="755" placeholder="X" /></div><div class="compact-field"><label for="userIdY">Y</label><input type="number" class="coord-input" id="userIdY" value="346" placeholder="Y" /></div><div class="compact-field"><label for="userIdSize">字号</label><input type="number" id="userIdSize" value="34" min="10" max="80" /></div>
                 </div>
             </div>
 
             <!-- ===== 等级 ===== -->
-            <div class="panel-group">
-                <label>📊 等级</label>
-                <div class="panel-row">
-                    <div class="panel-group" style="flex: 1.2">
-                        <input type="text" id="levelInput" value="VIP1" data-key="level" />
-                    </div>
-                    <div class="panel-group tiny">
-                        <input type="number" class="coord-input" id="levelX" value="892" placeholder="X" />
-                    </div>
-                    <div class="panel-group tiny">
-                        <input type="number" class="coord-input" id="levelY" value="423" placeholder="Y" />
-                    </div>
-                    <div class="panel-group tiny">
-                        <div class="color-picker-wrapper">
-                            <input type="color" id="levelColor" value="#ff0000" />
-                            <span class="color-hex" id="levelColorHex">#ff0000</span>
-                        </div>
-                    </div>
-                    <div class="panel-group tiny">
-                        <input type="number" id="levelSize" value="34" min="10" max="80" />
-                    </div>
+            <div class="panel-group text-card level-card">
+                <div class="text-main-row">
+                    <label for="levelInput">等级</label>
+                    <input type="text" id="levelInput" value="VIP1" data-key="level" />
+                    <div class="inline-color" title="等级颜色"><input aria-label="等级颜色" type="color" id="levelColor" value="#ff0000" /><span class="color-hex" id="levelColorHex">#ff0000</span><input class="hex-code-input" id="levelColorCode" type="text" value="#FF0000" maxlength="7" spellcheck="false" autocomplete="off" aria-label="等级颜色代码" title="输入十六进制颜色，例如 #FF0000" placeholder="#FF0000" /></div>
+                </div>
+                <div class="text-detail-row advanced-control">
+<div class="compact-field"><label for="levelX">X</label><input type="number" class="coord-input" id="levelX" value="892" placeholder="X" /></div><div class="compact-field"><label for="levelY">Y</label><input type="number" class="coord-input" id="levelY" value="423" placeholder="Y" /></div><div class="compact-field"><label for="levelSize">字号</label><input type="number" id="levelSize" value="34" min="10" max="80" /></div>
                 </div>
             </div>
 
             <!-- ===== 奖励金额 ===== -->
-            <div class="panel-group">
-                <label>💰 奖励金额</label>
-                <div class="panel-row">
-                    <div class="panel-group" style="flex: 1.2">
-                        <input type="text" id="rewardInput" value="50" data-key="reward" />
-                    </div>
-                    <div class="panel-group tiny">
-                        <input type="number" class="coord-input" id="rewardX" value="974" placeholder="X" />
-                    </div>
-                    <div class="panel-group tiny">
-                        <input type="number" class="coord-input" id="rewardY" value="516" placeholder="Y" />
-                    </div>
-                    <div class="panel-group tiny">
-                        <div class="color-picker-wrapper">
-                            <input type="color" id="rewardColor" value="#ff0000" />
-                            <span class="color-hex" id="rewardColorHex">#ff0000</span>
-                        </div>
-                    </div>
-                    <div class="panel-group tiny">
-                        <input type="number" id="rewardSize" value="50" min="10" max="80" />
-                    </div>
+            <div class="panel-group text-card reward-card">
+                <div class="text-main-row">
+                    <label for="rewardInput">金额</label>
+                    <input type="text" id="rewardInput" value="50" data-key="reward" />
+                    <div class="inline-color" title="金额颜色"><input aria-label="奖励金额颜色" type="color" id="rewardColor" value="#ff0000" /><span class="color-hex" id="rewardColorHex">#ff0000</span><input class="hex-code-input" id="rewardColorCode" type="text" value="#FF0000" maxlength="7" spellcheck="false" autocomplete="off" aria-label="金额颜色代码" title="输入十六进制颜色，例如 #FF0000" placeholder="#FF0000" /></div>
+                </div>
+                <div class="text-detail-row advanced-control">
+<div class="compact-field"><label for="rewardX">X</label><input type="number" class="coord-input" id="rewardX" value="974" placeholder="X" /></div><div class="compact-field"><label for="rewardY">Y</label><input type="number" class="coord-input" id="rewardY" value="516" placeholder="Y" /></div><div class="compact-field"><label for="rewardSize">字号</label><input type="number" id="rewardSize" value="50" min="10" max="80" /></div>
                 </div>
             </div>
 
-            <div class="btn-group" style="margin-top: 8px">
+<input type="file" id="bgInput" accept="image/*" style="display: none" />
+            <div class="btn-group export-actions" style="margin-top: 8px">
                 <button class="btn btn-success" id="exportPngBtn">💾 导出 PNG</button>
                 <button class="btn btn-primary" id="copyImageBtn">📋 复制</button>
             </div>
 
-            <div class="shortcuts">
+            <div class="shortcuts advanced-control">
                 <span><kbd>Ctrl+S</kbd> 导出</span>
                 <span><kbd>Ctrl+Shift+C</kbd> 复制</span>
                 <span><kbd>双击</kbd> 编辑</span>
@@ -661,6 +797,19 @@
             </div>
         </div>
     </div>
+
+
+    <dialog id="resetDialog" aria-labelledby="resetDialogTitle" aria-describedby="resetDialogDescription">
+        <form method="dialog" class="reset-dialog-content">
+            <div class="reset-dialog-icon" aria-hidden="true">↺</div>
+            <h2 id="resetDialogTitle">确认重置？</h2>
+            <p id="resetDialogDescription">头像、背景、会员账号、等级、金额及布局将恢复默认设置，并覆盖当前自动保存的内容。</p>
+            <div class="reset-dialog-actions">
+                <button type="submit" value="cancel" class="reset-dialog-cancel" autofocus>取消</button>
+                <button type="submit" value="confirm" class="reset-dialog-confirm">确认重置</button>
+            </div>
+        </form>
+    </dialog>
 
     <script>
         (function () {
@@ -718,12 +867,79 @@
             const uploadBgHeaderBtn = document.getElementById("uploadBgHeaderBtn");
             const exportPngBtn = document.getElementById("exportPngBtn");
             const copyImageBtn = document.getElementById("copyImageBtn");
-            const saveTemplateBtn = document.getElementById("saveTemplateBtn");
-            const loadTemplateBtn = document.getElementById("loadTemplateBtn");
+
             const resetTemplateBtn = document.getElementById("resetTemplateBtn");
-            const templateFileInput = document.getElementById("templateFileInput");
+
             const templateBtns = document.querySelectorAll(".template-btn");
 
+            // 只切换右侧设置的可见性；不重建画布或重置任何编辑值。
+            const editorPanel = document.getElementById('editorPanel');
+            const toggleEditorBtn = document.getElementById('toggleEditorBtn');
+            function setEditorExpanded(expanded) {
+                editorPanel.classList.toggle('is-collapsed', !expanded);
+                editorPanel.querySelectorAll('.advanced-control').forEach(control => { control.hidden = !expanded; });
+                toggleEditorBtn.setAttribute('aria-expanded', String(expanded));
+                document.getElementById('toggleEditorText').textContent = expanded ? '收起' : '展开';
+                document.getElementById('editorModeLabel').textContent = expanded ? '全部设置' : '快捷编辑';
+                requestAnimationFrame(() => scheduleFitCanvas());
+            }
+            toggleEditorBtn.addEventListener('click', () => {
+                setEditorExpanded(toggleEditorBtn.getAttribute('aria-expanded') !== 'true');
+            });
+            setEditorExpanded(true);
+
+            const DEFAULT_AVATAR_LAYOUT = Object.freeze({ x: 255, y: 380, radius: 159 });
+            let avatarLayout = { ...DEFAULT_AVATAR_LAYOUT };
+            let avatarLoadVersion = 0;
+            function syncAvatarControls() {
+                for (const [suffix, value] of [['X', avatarLayout.x], ['Y', avatarLayout.y], ['Diameter', avatarLayout.radius * 2]]) {
+                    for (const tail of ['', 'Range']) document.getElementById('avatar' + suffix + tail).value = value;
+                }
+            }
+            function setAvatarLayout(value) {
+                const next = { ...DEFAULT_AVATAR_LAYOUT };
+                for (const key of ['x', 'y', 'radius']) {
+                    if (value && Number.isFinite(value[key])) next[key] = value[key];
+                }
+                next.x = Math.max(0, Math.min(1280, next.x));
+                next.y = Math.max(0, Math.min(canvasHeight, next.y));
+                next.radius = Math.max(10, Math.min(640, next.radius));
+                avatarLayout = next;
+                syncAvatarControls();
+            }
+            function positionAvatar() {
+                const img = objects.avatar;
+                if (!img) return;
+                const sx = (canvas.width || 1280) / 1280;
+                const sy = (canvas.height || 720) / 720;
+                const x = avatarLayout.x * sx;
+                const y = avatarLayout.y * sy;
+                const radius = avatarLayout.radius * Math.min(sx, sy);
+                const scale = Math.max(radius * 2 / img.width, radius * 2 / img.height);
+                img.set({ left: x - img.width * scale / 2, top: y - img.height * scale / 2, scaleX: scale, scaleY: scale });
+                img.clipPath.set({ left: x - radius, top: y - radius, radius });
+                img.dirty = true;
+                img.setCoords();
+                if (objects.avatarBorder) objects.avatarBorder.set({ left: x, top: y, radius: radius + 3 });
+                if (objects.avatarGlow) objects.avatarGlow.set({ left: x, top: y, radius: radius + 12 });
+                canvas.requestRenderAll();
+            }
+            for (const [suffix, key] of [['X', 'x'], ['Y', 'y'], ['Diameter', 'radius']]) {
+                for (const tail of ['', 'Range']) {
+                    const input = document.getElementById('avatar' + suffix + tail);
+                    input.addEventListener('input', () => {
+                        if (input.value === '' || !Number.isFinite(Number(input.value))) return;
+                        setAvatarLayout({ ...avatarLayout, [key]: Number(input.value) / (key === 'radius' ? 2 : 1) });
+                        positionAvatar();
+                        TEMPLATES[currentTemplate].avatar = { ...avatarLayout };
+                    });
+                }
+            }
+            document.getElementById('avatarLayoutReset').addEventListener('click', () => {
+                setAvatarLayout(DEFAULT_AVATAR_LAYOUT);
+                positionAvatar();
+                TEMPLATES[currentTemplate].avatar = { ...avatarLayout };
+            });
             let toastTimer;
             let currentTemplate = "default";
             let currentAvatarUrl = DEFAULT_AVATAR_URL;
@@ -797,37 +1013,51 @@
             };
 
             // ======================== 自适应 ========================
+            let fitFrame = 0;
             function fitCanvas() {
-                const wrapperWidth = canvasWrapper.clientWidth - 24;
-                const maxWidth = Math.min(wrapperWidth, 1000);
-                const ratio = canvasWidth / canvasHeight;
-                const displayWidth = Math.max(300, maxWidth);
-                const displayHeight = displayWidth / ratio;
-
-                canvasEl.style.width = displayWidth + "px";
-                canvasEl.style.height = displayHeight + "px";
-            }
-
-            function scheduleFitCanvas(delay = 0) {
-                if (delay > 0) {
-                    setTimeout(() => {
-                        requestAnimationFrame(fitCanvas);
-                    }, delay);
-                } else {
-                    requestAnimationFrame(fitCanvas);
+                const style = getComputedStyle(canvasWrapper);
+                const padding = (parseFloat(style.paddingLeft) || 0) + (parseFloat(style.paddingRight) || 0);
+                const availableWidth = Math.max(1, canvasWrapper.clientWidth - padding);
+                const sourceWidth = canvas.getWidth();
+                const sourceHeight = canvas.getHeight();
+                if (!(sourceWidth > 0 && sourceHeight > 0)) return;
+                // 宽、高使用同一个缩放系数，不改变画布内部尺寸或元素坐标。
+                const scale = availableWidth / sourceWidth;
+                const width = sourceWidth * scale;
+                const height = sourceHeight * scale;
+                canvas.setDimensions({ width, height }, { cssOnly: true });
+                // 统一显示层、交互层和外层容器，避免 CSS 独立拉伸任一层。
+                for (const layer of [canvas.lowerCanvasEl, canvas.upperCanvasEl, canvas.wrapperEl]) {
+                    if (!layer) continue;
+                    layer.style.width = width + 'px';
+                    layer.style.height = height + 'px';
+                    layer.style.maxWidth = 'none';
+                    layer.style.maxHeight = 'none';
+                    layer.style.flex = '0 0 auto';
                 }
+                canvas.calcOffset();
             }
-
+            function scheduleFitCanvas(delay = 0) {
+                const queue = () => {
+                    cancelAnimationFrame(fitFrame);
+                    fitFrame = requestAnimationFrame(() => { fitFrame = 0; fitCanvas(); });
+                };
+                if (delay > 0) setTimeout(queue, delay);
+                else queue();
+            }
             let resizeObserver = null;
-
             function setupResizeObserver() {
                 if (window.ResizeObserver) {
+                    let previousWidth = -1;
                     resizeObserver = new ResizeObserver(() => {
-                        fitCanvas();
+                        const width = canvasWrapper.clientWidth;
+                        if (width === previousWidth) return;
+                        previousWidth = width;
+                        scheduleFitCanvas();
                     });
                     resizeObserver.observe(canvasWrapper);
                 }
-                window.addEventListener("resize", fitCanvas);
+                window.addEventListener('resize', () => scheduleFitCanvas());
             }
 
             // ======================== 构建证书 ========================
@@ -857,6 +1087,7 @@
             }
 
             function buildCertificate(templateName) {
+                scheduleEditorSave();
                 if (isBuilding) return;
                 isBuilding = true;
 
@@ -894,8 +1125,9 @@
                             canvasHeight = targetHeight;
                             canvas.setWidth(canvasWidth);
                             canvas.setHeight(canvasHeight);
-                            canvasEl.width = canvasWidth;
-                            canvasEl.height = canvasHeight;
+
+                            document.getElementById('avatarY').max = canvasHeight;
+                            document.getElementById('avatarYRange').max = canvasHeight;
 
                             img.set({
                                 left: 0,
@@ -954,7 +1186,7 @@
                 const elems = template.elements;
 
                 const userIdVal = userIdInput.value || "8776843";
-                const levelVal = levelInput.value || "LV1";
+                const levelVal = levelInput.value || "VIP1";
                 const rewardVal = rewardInput.value || "50";
 
 
@@ -1009,6 +1241,8 @@
 
             // ======================== 头像构建 ========================
             function buildAvatar(url, template) {
+                scheduleEditorSave();
+                const loadVersion = ++avatarLoadVersion;
                 const canvasWidth = canvas.width || 1280;
                 const canvasHeight = canvas.height || 720;
 
@@ -1016,9 +1250,9 @@
                 const DESIGN_HEIGHT = 720;
 
                 // 头像位置和大小
-                const AVATAR_LEFT = 255;
-                const AVATAR_TOP = 380;
-                const AVATAR_RADIUS = 159;
+                const AVATAR_LEFT = avatarLayout.x;
+                const AVATAR_TOP = avatarLayout.y;
+                const AVATAR_RADIUS = avatarLayout.radius;
 
                 const scaleX = canvasWidth / DESIGN_WIDTH;
                 const scaleY = canvasHeight / DESIGN_HEIGHT;
@@ -1044,6 +1278,7 @@
                 fabric.Image.fromURL(
                     url,
                     (img) => {
+                        if (loadVersion !== avatarLoadVersion) return;
                         if (img) {
                             const scaleXImg = (avatarRadius * 2) / img.width;
                             const scaleYImg = (avatarRadius * 2) / img.height;
@@ -1071,12 +1306,38 @@
                                 originX: "left",
                                 originY: "top",
                                 clipPath: clipPath,
-                                selectable: false,
-                                evented: false,
+                                selectable: true,
+                                evented: true,
+                                hasControls: false,
+                                hasBorders: false,
+                                lockScalingX: true,
+                                lockScalingY: true,
+                                lockRotation: true,
+                                perPixelTargetFind: true,
+                                hoverCursor: "move",
+                                moveCursor: "move",
                                 crossOrigin: "anonymous",
                             });
 
                             objects.avatar = img;
+                            // Fabric 返回画布坐标，自动适配预览的等比例缩放。
+                            const syncDraggedAvatar = () => {
+                                if (objects.avatar !== img) return;
+                                const center = img.getCenterPoint();
+                                const sx = (canvas.width || 1280) / 1280;
+                                const sy = (canvas.height || 720) / 720;
+                                setAvatarLayout({
+                                    ...avatarLayout,
+                                    x: Math.round(center.x / sx),
+                                    y: Math.round(center.y / sy)
+                                });
+                                // 圆形裁切、边框、光晕与头像同步移动。
+                                positionAvatar();
+                                TEMPLATES[currentTemplate].avatar = { ...avatarLayout };
+                                scheduleEditorSave();
+                            };
+                            img.on('moving', syncDraggedAvatar);
+                            img.on('modified', syncDraggedAvatar);
                             canvas.add(img);
 
                             const border = new fabric.Circle({
@@ -1127,6 +1388,7 @@
             }
 
             // ======================== 启用拖拽 ========================
+            let textDragEventsBound = false;
             function enableDragging() {
                 const textObjects = [
                     objects.userId,
@@ -1142,24 +1404,28 @@
                     });
                 });
 
-                canvas.on("object:modified", function (e) {
+                // 重建画布时只更新对象，不重复绑定画布事件。
+                if (textDragEventsBound) return;
+                textDragEventsBound = true;
+                function syncTextPosition(e) {
                     const target = e.target;
-                    if (target && target.type === "text") {
-                        const key = getKeyForObject(target);
-                        if (key) {
-                            const config = elementConfig[key];
-                            if (config) {
-                                config.xInput.value = Math.round(target.left);
-                                config.yInput.value = Math.round(target.top);
-                                const template = TEMPLATES[currentTemplate];
-                                if (template && template.elements[key]) {
-                                    template.elements[key].left = Math.round(target.left);
-                                    template.elements[key].top = Math.round(target.top);
-                                }
-                            }
-                        }
+                    if (!target || target.type !== "text") return;
+                    const key = getKeyForObject(target);
+                    const config = elementConfig[key];
+                    if (!config) return;
+                    const x = Math.round(target.left);
+                    const y = Math.round(target.top);
+                    config.xInput.value = x;
+                    config.yInput.value = y;
+                    const template = TEMPLATES[currentTemplate];
+                    if (template && template.elements[key]) {
+                        template.elements[key].left = x;
+                        template.elements[key].top = y;
                     }
-                });
+                    scheduleEditorSave();
+                }
+                canvas.on("object:moving", syncTextPosition);
+                canvas.on("object:modified", syncTextPosition);
 
                 canvas.on("mouse:dblclick", function (opt) {
                     const target = opt.target;
@@ -1170,8 +1436,8 @@
 
                     const input = getInputForObject(target);
                     if (input) {
-                        highlightInput(input);
-                        input.focus();
+                        highlightInput(input, true);
+                        input.focus({ preventScroll: true });
                         input.select();
                         showToast(`✏️ 正在编辑: "${input.value}"`);
                     }
@@ -1197,13 +1463,14 @@
                 return null;
             }
 
-            function highlightInput(input) {
+            function highlightInput(input, reveal = false) {
                 if (!input) return;
                 document.querySelectorAll(".panel-group input").forEach((el) => {
                     el.classList.remove("highlight");
                 });
                 input.classList.add("highlight");
-                input.scrollIntoView({ behavior: "smooth", block: "center" });
+                // 常规点击、输入和选择颜色只高亮，不触发滚动。
+                if (reveal) input.scrollIntoView({ behavior: "auto", block: "nearest", inline: "nearest" });
             }
 
             function clearHighlight() {
@@ -1221,8 +1488,8 @@
                     if (template.elements[key]) {
                         const config = elementConfig[key];
                         if (config) {
-                            const x = parseFloat(config.xInput.value) || template.elements[key].left;
-                            const y = parseFloat(config.yInput.value) || template.elements[key].top;
+                            const x = (Number.isFinite(parseFloat(config.xInput.value)) ? parseFloat(config.xInput.value) : template.elements[key].left);
+                            const y = (Number.isFinite(parseFloat(config.yInput.value)) ? parseFloat(config.yInput.value) : template.elements[key].top);
                             const color = config.colorInput.value;
                             const size = parseInt(config.sizeInput.value) || template.elements[key].fontSize;
 
@@ -1260,8 +1527,8 @@
                 const config = elementConfig[key];
                 if (!config) return;
 
-                const x = parseFloat(config.xInput.value) || obj.left;
-                const y = parseFloat(config.yInput.value) || obj.top;
+                const x = (Number.isFinite(parseFloat(config.xInput.value)) ? parseFloat(config.xInput.value) : obj.left);
+                const y = (Number.isFinite(parseFloat(config.yInput.value)) ? parseFloat(config.yInput.value) : obj.top);
                 const size = parseInt(config.sizeInput.value) || obj.fontSize;
 
 
@@ -1381,6 +1648,7 @@
                     currentTemplate = this.dataset.template;
 
                     const template = TEMPLATES[currentTemplate];
+                    setAvatarLayout(template?.avatar);
                     if (template) {
                         const keys = ["userId", "level", "reward"];
                         keys.forEach((key) => {
@@ -1405,124 +1673,25 @@
                 });
             });
 
-            // ======================== 保存模板 ========================
-            saveTemplateBtn.addEventListener("click", function () {
-                try {
-                    updateTemplateFromUI(currentTemplate);
-
-                    const positions = {};
-                    const textKeys = ["userId", "level", "reward"];
-
-                    textKeys.forEach((key) => {
-                        const obj = objects[key];
-                        if (obj && obj.type === "text") {
-                            positions[key] = {
-                                left: Math.round(obj.left),
-                                top: Math.round(obj.top),
-                                fontSize: obj.fontSize,
-                                color: obj.fill,
-                                align: obj.textAlign || "center",
-                            };
-                        }
-                    });
-
-                    const template = {
-                        name: "自定义模板",
-                        bgImage: currentBgUrl || BG_IMAGE_URL,
-                        elements: positions,
-                        createdAt: new Date().toISOString(),
-                    };
-
-                    const blob = new Blob([JSON.stringify(template, null, 2)], {
-                        type: "application/json",
-                    });
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement("a");
-                    link.download = `certificate_template_${Date.now()}.json`;
-                    link.href = url;
-                    link.click();
-                    URL.revokeObjectURL(url);
-
-                    showToast("✅ 模板已保存");
-                } catch (err) {
-                    showToast("⚠️ 保存失败: " + err.message);
-                }
-            });
-
-            // ======================== 加载模板 ========================
-            loadTemplateBtn.addEventListener("click", () => templateFileInput.click());
-
-            templateFileInput.addEventListener("change", function (e) {
-                const file = e.target.files[0];
-                if (!file) return;
-
-                const reader = new FileReader();
-                reader.onload = function (ev) {
-                    try {
-                        const template = JSON.parse(ev.target.result);
-                        if (!template.elements) {
-                            showToast("⚠️ 无效的模板文件");
-                            return;
-                        }
-
-                        TEMPLATES["custom"] = template;
-                        currentTemplate = "custom";
-
-                        const keys = ["userId", "level", "reward"];
-                        keys.forEach((key) => {
-                            const elem = template.elements[key];
-                            if (elem) {
-                                const config = elementConfig[key];
-                                if (config) {
-                                    config.xInput.value = elem.left;
-                                    config.yInput.value = elem.top;
-                                    config.colorInput.value = elem.color || "#ff0000";
-                                    config.sizeInput.value = elem.fontSize;
-                                    if (config.colorHex) {
-                                        config.colorHex.textContent = config.colorInput.value;
-                                    }
-                                }
-                            }
-                        });
-
-                        const container = document.querySelector(".template-selector");
-                        const customBtn = document.createElement("button");
-                        customBtn.className = "template-btn active";
-                        customBtn.dataset.template = "custom";
-                        customBtn.textContent = "📂 自定义";
-                        document
-                            .querySelectorAll(".template-btn")
-                            .forEach((b) => b.classList.remove("active"));
-                        const existing = container.querySelector(
-                            '[data-template="custom"]'
-                        );
-                        if (existing) {
-                            existing.remove();
-                        }
-                        container.appendChild(customBtn);
-                        customBtn.addEventListener("click", function () {
-                            document
-                                .querySelectorAll(".template-btn")
-                                .forEach((b) => b.classList.remove("active"));
-                            this.classList.add("active");
-                            currentTemplate = "custom";
-                            buildCertificate("custom");
-                            showToast("📁 加载自定义模板");
-                        });
-
-                        buildCertificate("custom");
-                        showToast("✅ 模板加载成功");
-                    } catch (err) {
-                        showToast("⚠️ 模板解析失败: " + err.message);
-                    }
-                };
-                reader.readAsText(file);
-                this.value = "";
-            });
-
             // ======================== 重置模板 ========================
-            resetTemplateBtn.addEventListener("click", function () {
-                if (confirm("确定要重置为默认模板吗？")) {
+            const resetDialog = document.getElementById('resetDialog');
+            function requestResetConfirmation() {
+                if (resetDialog.open) return Promise.resolve(false);
+                return new Promise(resolve => {
+                    resetDialog.returnValue = '';
+                    resetDialog.addEventListener('close', () => {
+                        resolve(resetDialog.returnValue === 'confirm');
+                        resetTemplateBtn.focus({ preventScroll: true });
+                    }, { once: true });
+                    resetDialog.showModal();
+                });
+            }
+            resetDialog.addEventListener('click', event => {
+                const bounds = resetDialog.getBoundingClientRect();
+                if (event.target === resetDialog && (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom)) resetDialog.close('cancel');
+            });
+            resetTemplateBtn.addEventListener("click", async function () {
+                if (await requestResetConfirmation()) {
                     currentTemplate = "default";
                     document.querySelectorAll(".template-btn").forEach((b) => {
                         b.classList.remove("active");
@@ -1535,9 +1704,10 @@
                     delete TEMPLATES["custom"];
 
                     userIdInput.value = "8776843";
-                    levelInput.value = "LV1";
+                    levelInput.value = "VIP1";
                     rewardInput.value = "50";
 
+                    TEMPLATES.default = JSON.parse(JSON.stringify(ORIGINAL_DEFAULT_TEMPLATE));
                     const defaultTemplate = TEMPLATES.default;
                     const keys = ["userId", "level", "reward"];
                     keys.forEach((key) => {
@@ -1558,6 +1728,8 @@
 
                     currentAvatarUrl = DEFAULT_AVATAR_URL;
                     currentBgUrl = BG_IMAGE_URL;
+                    setAvatarLayout(DEFAULT_AVATAR_LAYOUT);
+                    TEMPLATES.default.avatar = { ...avatarLayout };
                     buildCertificate("default");
                     showToast("🔄 已重置");
                 }
@@ -1707,6 +1879,7 @@
 
             // ======================== 快捷键 ========================
             document.addEventListener("keydown", (e) => {
+                if (resetDialog.open) return;
                 if (e.ctrlKey && e.key.toLowerCase() === "s") {
                     e.preventDefault();
                     exportPngBtn.click();
@@ -1721,9 +1894,186 @@
                 }
             });
 
+            // 自动保存到当前浏览器；IndexedDB 可保存上传的头像和背景图片。
+            const ORIGINAL_DEFAULT_TEMPLATE = JSON.parse(JSON.stringify(TEMPLATES.default));
+            const STORAGE_DB_NAME = 'certificate-editor-local-v1';
+            const STORAGE_RECORD_KEY = 'last-session';
+            let storageDatabasePromise;
+            let persistenceReady = false;
+            let persistenceTimer;
+            let persistenceRevision = 0;
+            let saveQueue = Promise.resolve();
+            function setSaveStatus(message, error = false) {
+                const status = document.getElementById('saveStatus');
+                status.textContent = message;
+                status.dataset.error = String(error);
+            }
+            function openEditorStorage() {
+                if (!storageDatabasePromise) {
+                    storageDatabasePromise = new Promise((resolve, reject) => {
+                        if (!window.indexedDB) return reject(new Error('浏览器不支持本地存储'));
+                        const request = indexedDB.open(STORAGE_DB_NAME, 1);
+                        request.onupgradeneeded = () => {
+                            if (!request.result.objectStoreNames.contains('sessions')) request.result.createObjectStore('sessions');
+                        };
+                        request.onsuccess = () => resolve(request.result);
+                        request.onerror = () => reject(request.error || new Error('无法打开本地存储'));
+                        request.onblocked = () => setSaveStatus('本地存储被占用，请关闭其他编辑器页面后重试', true);
+                    });
+                }
+                return storageDatabasePromise;
+            }
+            function collectEditorState() {
+                const fields = {};
+                for (const key of ['userId', 'level', 'reward']) {
+                    const config = elementConfig[key];
+                    fields[key] = {
+                        text: config.textInput.value,
+                        x: config.xInput.value,
+                        y: config.yInput.value,
+                        size: config.sizeInput.value,
+                        color: config.colorInput.value
+                    };
+                }
+                return {
+                    version: 1,
+                    savedAt: new Date().toISOString(),
+                    fields,
+                    avatar: { ...avatarLayout },
+                    avatarUrl: currentAvatarUrl,
+                    bgUrl: currentBgUrl,
+                    templates: JSON.parse(JSON.stringify(TEMPLATES)),
+                    currentTemplate,
+                    expanded: toggleEditorBtn.getAttribute('aria-expanded') === 'true'
+                };
+            }
+            async function writeEditorState(state) {
+                const database = await openEditorStorage();
+                await new Promise((resolve, reject) => {
+                    const transaction = database.transaction('sessions', 'readwrite');
+                    transaction.objectStore('sessions').put(state, STORAGE_RECORD_KEY);
+                    transaction.oncomplete = resolve;
+                    transaction.onerror = () => reject(transaction.error || new Error('保存失败'));
+                    transaction.onabort = () => reject(transaction.error || new Error('保存被中断'));
+                });
+            }
+            function saveEditorNow() {
+                if (!persistenceReady) return Promise.resolve();
+                clearTimeout(persistenceTimer);
+                const revision = persistenceRevision;
+                const state = collectEditorState();
+                saveQueue = saveQueue.catch(() => {}).then(() => writeEditorState(state)).then(() => {
+                    if (revision === persistenceRevision) setSaveStatus('已自动保存到此浏览器');
+                }).catch(() => {
+                    setSaveStatus('自动保存失败：请检查浏览器存储权限或剩余空间', true);
+                });
+                return saveQueue;
+            }
+            function scheduleEditorSave() {
+                if (!persistenceReady) return;
+                persistenceRevision++;
+                clearTimeout(persistenceTimer);
+                setSaveStatus('正在保存…');
+                persistenceTimer = setTimeout(saveEditorNow, 350);
+            }
+            async function restoreEditorState() {
+                try {
+                    const database = await openEditorStorage();
+                    const saved = await new Promise((resolve, reject) => {
+                        const request = database.transaction('sessions', 'readonly').objectStore('sessions').get(STORAGE_RECORD_KEY);
+                        request.onsuccess = () => resolve(request.result);
+                        request.onerror = () => reject(request.error);
+                    });
+                    if (!saved || saved.version !== 1 || !saved.fields) {
+                        setSaveStatus('自动保存已开启');
+                        return;
+                    }
+                    if (saved.templates && typeof saved.templates === 'object') {
+                        for (const key of ['default', 'custom']) {
+                            const template = saved.templates[key];
+                            if (template && template.elements && ['userId', 'level', 'reward'].every(name => template.elements[name])) TEMPLATES[key] = template;
+                        }
+                    }
+                    currentTemplate = Object.prototype.hasOwnProperty.call(TEMPLATES, saved.currentTemplate) ? saved.currentTemplate : 'default';
+                    for (const key of ['userId', 'level', 'reward']) {
+                        const field = saved.fields[key];
+                        if (!field) continue;
+                        const config = elementConfig[key];
+                        if (typeof field.text === 'string') config.textInput.value = field.text;
+                        for (const [name, input] of [['x', config.xInput], ['y', config.yInput], ['size', config.sizeInput]]) {
+                            if (field[name] !== '' && Number.isFinite(Number(field[name]))) input.value = field[name];
+                        }
+                        if (/^#[0-9a-f]{6}$/i.test(field.color)) {
+                            config.colorInput.value = field.color;
+                            config.colorHex.textContent = field.color;
+                        }
+                    }
+                    // 背景高度在图片加载后才确定，不在此阶段裁剪已保存的 Y 值。
+                    if (saved.avatar && ['x', 'y', 'radius'].every(key => Number.isFinite(saved.avatar[key]))) {
+                        avatarLayout = { ...saved.avatar };
+                        syncAvatarControls();
+                    }
+                    if (typeof saved.avatarUrl === 'string') currentAvatarUrl = saved.avatarUrl;
+                    if (typeof saved.bgUrl === 'string') currentBgUrl = saved.bgUrl;
+                    setEditorExpanded(saved.expanded !== false);
+                    setSaveStatus('已恢复上次编辑 · 自动保存已开启');
+                } catch (_) {
+                    setSaveStatus('无法读取本地记录；仍可编辑、导出图片', true);
+                }
+            }
+            document.addEventListener('input', scheduleEditorSave);
+            document.addEventListener('change', scheduleEditorSave);
+            toggleEditorBtn.addEventListener('click', scheduleEditorSave);
+            document.getElementById('avatarLayoutReset').addEventListener('click', scheduleEditorSave);
+            canvas.on('object:modified', () => setTimeout(scheduleEditorSave, 0));
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'hidden') saveEditorNow();
+            });
+            window.addEventListener('pagehide', saveEditorNow);
+
+            // 颜色代码与原有色板双向同步，复用原有样式更新及自动保存。
+            function normalizeHexCode(value) {
+                const raw = value.trim().replace(/^#/, '');
+                if (/^[0-9a-f]{6}$/i.test(raw)) return '#' + raw.toLowerCase();
+                if (/^[0-9a-f]{3}$/i.test(raw)) return '#' + raw.split('').map(c => c + c).join('').toLowerCase();
+                return null;
+            }
+            Object.keys(elementConfig).forEach(key => {
+                const config = elementConfig[key];
+                const codeInput = document.getElementById(key + 'ColorCode');
+                const sync = () => {
+                    codeInput.value = config.colorInput.value.toUpperCase();
+                    codeInput.removeAttribute('aria-invalid');
+                };
+                codeInput.addEventListener('input', () => {
+                    const normalized = normalizeHexCode(codeInput.value);
+                    if (!normalized) return;
+                    config.colorInput.value = normalized;
+                    config.colorInput.dispatchEvent(new Event('input', { bubbles: true }));
+                });
+                codeInput.addEventListener('change', () => {
+                    if (!normalizeHexCode(codeInput.value)) {
+                        codeInput.setAttribute('aria-invalid', 'true');
+                        showToast('请输入有效颜色代码，例如 #FF0000');
+                    } else sync();
+                });
+                codeInput.addEventListener('keydown', event => {
+                    if (event.key === 'Enter') codeInput.blur();
+                });
+                config.colorInput.addEventListener('input', () => {
+                    if (document.activeElement !== codeInput) sync();
+                });
+                new MutationObserver(() => {
+                    if (document.activeElement !== codeInput) sync();
+                }).observe(config.colorHex, { childList: true, characterData: true, subtree: true });
+                sync();
+            });
+
             // ======================== 启动 ========================
-            function init() {
-                buildCertificate("default");
+            async function init() {
+                await restoreEditorState();
+                buildCertificate(currentTemplate);
+                persistenceReady = true;
 
                 setTimeout(() => {
                     requestAnimationFrame(fitCanvas);
@@ -1753,7 +2103,7 @@
             });
 
         })();
-    </script>
+        </script>
 </body>
 
 </html>
