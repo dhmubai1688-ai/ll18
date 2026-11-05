@@ -734,6 +734,10 @@
         #editorPanel[data-expanded="false"] .panel-header-actions .btn {flex:1;}
         #editorPanel[data-expanded="false"] .text-main-row {grid-template-columns:58px minmax(0,1fr);padding-bottom:0;}
         #editorPanel[data-expanded="false"] .export-actions #copyImageBtn {width:100%;flex:1;}
+
+        #canvasInlineInput {position:fixed;z-index:1000;box-sizing:border-box;margin:0;padding:5px 10px;border:1px solid #92c5ff;border-radius:8px;background:rgba(12,25,44,.96);box-shadow:0 0 0 3px #6caaff30,0 6px 18px #0005;outline:none;line-height:1.2;caret-color:#fff;transition:box-shadow .15s;}
+        #canvasInlineInput[hidden] {display:none!important;}
+        #canvasInlineInput::selection {background:#477ebd;color:#fff;}
     </style>
 </head>
 
@@ -846,7 +850,7 @@
         <div class="help-content">
             <section><h3>01 · 上传背景</h3><p>建议尺寸为 <strong>1280 × 720 px（16:9）</strong>。点击「上传背景」选择本地图片；其他比例也可以使用。更换背景后，可按新图的位置重新调整头像和文字。</p></section>
             <section><h3>02 · 头像上传、移动与大小</h3><p>点击「上传头像」选择图片，头像会裁切为圆形。直接拖动左侧头像即可移动，右侧 X、Y 数值与滑块实时同步。也可拖动滑块或输入数值：X 增大向右，Y 增大向下；「大小」为头像直径，单位为像素。</p><p>「恢复位置」恢复头像默认位置和大小；上传头像旁的「×」恢复默认头像。</p></section>
-            <section><h3>03 · 会员账号、等级与金额</h3><p>在右侧输入框修改内容，左侧即时更新。直接拖动左侧的会员账号、等级或金额，可调整文字位置，右侧 X、Y 会实时更新。<strong>双击左侧文字</strong>，会定位并选中对应输入框，方便直接修改。</p><p>每张卡片第二行可以设置 X、Y 坐标及字号。字体为 Arial Black 斜体；设备缺少该字体时，浏览器会使用备用字体。</p></section>
+            <section><h3>03 · 会员账号、等级与金额</h3><p>在右侧输入框修改内容，左侧即时更新。直接拖动左侧的会员账号、等级或金额，可调整文字位置，右侧 X、Y 会实时更新。<strong>双击左侧文字</strong>，会在文字原位置显示输入框，直接输入即可同步到右侧并自动保存；按 Esc、Enter 或点击其他位置退出编辑，保留已输入的内容。</p><p>每张卡片第二行可以设置 X、Y 坐标及字号。字体为 Arial Black 斜体；设备缺少该字体时，浏览器会使用备用字体。</p></section>
             <section><h3>04 · 文字颜色</h3><p>点击内容旁的色块选择颜色，或在颜色代码输入框中输入 <strong>#FF0000</strong> 等十六进制色值。支持六位代码、三位简写和省略 # 的写法；有效色值会即时应用并自动保存。</p></section>
             <section><h3>05 · 展开、收起与预览缩放</h3><p>首次打开默认展开，显示全部设置。点击「收起」，右侧变成快捷编辑窄栏，保留头像上传、账号、等级、金额等常用项；点击「展开」恢复全部设置。</p><p>桌面端右侧变窄时，左侧图片按可用宽度等比例放大；展开时等比例缩小，不拉伸。小屏幕采用上下布局。缩放只影响预览，不改变导出尺寸。背景图本身不能拖动，能拖动的是头像和文字。</p></section>
             <section><h3>06 · 自动保存</h3><p>头像、背景、文字内容、位置、大小、颜色及展开／收起状态会自动保存在当前浏览器。看到「已自动保存到此浏览器」后即可关闭，重新打开会恢复上次编辑。</p><p>请使用同一浏览器打开文件。换浏览器、使用无痕模式或清除浏览器数据，可能无法保留记录；本地保存不会同步到其他设备。</p></section>
@@ -856,6 +860,10 @@
         </div>
         <div class="help-footer"><button type="button" id="helpDoneBtn">我知道了</button></div>
     </dialog>
+
+
+    <input id="canvasInlineInput" type="text" hidden autocomplete="off" spellcheck="false" aria-label="直接编辑文字" title="直接输入修改，按 Esc 或 Enter 退出编辑" />
+
 
     <script>
         (function () {
@@ -1487,13 +1495,8 @@
                         return;
                     }
 
-                    const input = getInputForObject(target);
-                    if (input) {
-                        highlightInput(input, true);
-                        input.focus({ preventScroll: true });
-                        input.select();
-                        showToast(`✏️ 正在编辑: "${input.value}"`);
-                    }
+                    const key = getKeyForObject(target);
+                    if (key) openTextEditor(key, opt.e);
                 });
             }
 
@@ -1727,6 +1730,69 @@
             });
 
             // ======================== 重置模板 ========================
+            const canvasInlineInput = document.getElementById('canvasInlineInput');
+            let editingTextKey = null;
+            function positionInlineEditor() {
+                if (!editingTextKey || canvasInlineInput.hidden) return;
+                const obj = objects[editingTextKey];
+                if (!obj) { finishInlineEditing(); return; }
+                const rect = canvas.lowerCanvasEl.getBoundingClientRect();
+                const bounds = obj.getBoundingRect();
+                const scale = rect.width / canvas.getWidth();
+                const fontSize = Math.max(12, obj.fontSize * scale);
+                const width = Math.min(Math.max(90, bounds.width * scale + 24), window.innerWidth - 16);
+                const height = Math.max(34, bounds.height * scale + 12);
+                const left = Math.max(8, Math.min(rect.left + bounds.left * scale - 10, window.innerWidth - width - 8));
+                const top = Math.max(8, Math.min(rect.top + bounds.top * scale - 6, window.innerHeight - height - 8));
+                Object.assign(canvasInlineInput.style, {
+                    left: left + 'px', top: top + 'px', width: width + 'px', height: height + 'px',
+                    fontFamily: obj.fontFamily, fontWeight: String(obj.fontWeight), fontStyle: obj.fontStyle,
+                    fontSize: fontSize + 'px', color: typeof obj.fill === 'string' ? obj.fill : '#ffffff',
+                    textAlign: obj.textAlign || 'left'
+                });
+            }
+            function finishInlineEditing() {
+                if (!editingTextKey) return;
+                editingTextKey = null;
+                canvasInlineInput.hidden = true;
+                canvasInlineInput.blur();
+                canvas.discardActiveObject();
+                canvas.requestRenderAll();
+                scheduleEditorSave();
+            }
+            function openTextEditor(key) {
+                const config = elementConfig[key];
+                if (!config) return;
+                finishInlineEditing();
+                editingTextKey = key;
+                canvasInlineInput.value = config.textInput.value;
+                canvasInlineInput.setAttribute('aria-label', '编辑' + ({userId:'会员账号',level:'等级',reward:'金额'}[key]));
+                canvasInlineInput.hidden = false;
+                positionInlineEditor();
+                canvasInlineInput.focus({ preventScroll: true });
+                canvasInlineInput.select();
+            }
+            canvasInlineInput.addEventListener('input', () => {
+                const config = elementConfig[editingTextKey];
+                if (!config) return;
+                config.textInput.value = canvasInlineInput.value;
+                config.textInput.dispatchEvent(new Event('input', { bubbles: true }));
+                objects[editingTextKey]?.setCoords();
+                positionInlineEditor();
+            });
+            canvasInlineInput.addEventListener('keydown', event => {
+                if (event.isComposing) return;
+                if (event.key === 'Escape' || event.key === 'Enter') {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    finishInlineEditing();
+                }
+            });
+            canvasInlineInput.addEventListener('blur', finishInlineEditing);
+            window.addEventListener('resize', positionInlineEditor);
+            window.addEventListener('scroll', positionInlineEditor, true);
+            if (window.ResizeObserver) new ResizeObserver(positionInlineEditor).observe(canvasWrapper);
+
             const helpDialog = document.getElementById('helpDialog');
             const helpTrigger = document.getElementById('editorModeLabel');
             helpTrigger.addEventListener('click', () => {
