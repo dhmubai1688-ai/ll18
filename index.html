@@ -676,23 +676,64 @@
             outline-offset:2px;
         }
 
-        #resetDialog {margin:auto;width:min(400px,calc(100vw - 32px));max-height:calc(100dvh - 40px);padding:0;border:1px solid #43516a;border-radius:18px;background:#172235;color:#edf3ff;box-shadow:0 28px 90px #0009;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;}
-        #resetDialog::backdrop {background:rgba(3,8,18,.72);backdrop-filter:blur(5px);}
-        .reset-dialog-content {padding:26px;}
-        .reset-dialog-icon {display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:#4d2937;color:#ffadb9;font-size:28px;margin-bottom:16px;}
-        #resetDialog h2 {font-size:20px;margin:0 0 12px;}
-        #resetDialog p {font-size:13px;line-height:1.8;color:#aebdd3;margin:0;}
-        .reset-dialog-actions {display:flex;gap:10px;margin-top:24px;}
-        .reset-dialog-actions button {flex:1;padding:11px 14px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;}
-        .reset-dialog-cancel {border:1px solid #50617b;background:#26364e;color:#e2ebfa;}
-        .reset-dialog-confirm {border:1px solid #ff8b98;background:linear-gradient(135deg,#a92339,#d83c50);color:white;}
-        .reset-dialog-actions button:hover {filter:brightness(1.12);}
-        .reset-dialog-actions button:focus-visible {outline:2px solid #9fc4ff;outline-offset:3px;}
-
         .background-size-hint {display:flex;flex-direction:column;gap:2px;color:#8fa6c4;font-size:9px;line-height:1.3;white-space:nowrap;margin-right:2px;}
         .background-size-hint span {color:#bdcee4;font-size:9px;font-variant-numeric:tabular-nums;}
-        .panel.is-collapsed .background-size-hint {font-size:8px;}
-        .panel.is-collapsed .background-size-hint span {font-size:8px;}
+        .panel.is-collapsed .background-size-hint,.panel.is-collapsed .background-size-hint span {font-size:8px;}
+        #resetDialog,#helpDialog {margin:auto;padding:0;border:1px solid #43516a;border-radius:18px;background:#172235;color:#edf3ff;box-shadow:0 28px 90px #0009;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;}
+        #resetDialog {width:min(400px,calc(100vw - 32px));max-height:calc(100dvh - 40px);}
+        #resetDialog::backdrop,#helpDialog::backdrop {background:rgba(3,8,18,.72);backdrop-filter:blur(5px);}
+        .reset-dialog-content {padding:26px;}.reset-dialog-icon {display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:#4d2937;color:#ffadb9;font-size:28px;margin-bottom:16px;}
+        #resetDialog h2 {font-size:20px;margin:0 0 12px;}#resetDialog p {font-size:13px;line-height:1.8;color:#aebdd3;margin:0;}
+        .reset-dialog-actions {display:flex;gap:10px;margin-top:24px;}.reset-dialog-actions button {flex:1;padding:11px 14px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;}
+        .reset-dialog-cancel {border:1px solid #50617b;background:#26364e;color:#e2ebfa;}.reset-dialog-confirm {border:1px solid #ff8b98;background:linear-gradient(135deg,#a92339,#d83c50);color:white;}
+        .reset-dialog-actions button:hover {filter:brightness(1.12);}.reset-dialog-actions button:focus-visible {outline:2px solid #9fc4ff;outline-offset:3px;}
+        #editorModeLabel {display:inline-block;align-self:flex-start;background:none;border:0;padding:0;font-family:inherit;color:#b5d5ff;text-align:left;cursor:pointer;text-decoration:underline;text-decoration-color:#5c7caa;text-underline-offset:4px;}
+        #editorModeLabel:hover {color:white;}
+        #helpDialog {width:min(660px,calc(100vw - 32px));max-height:calc(100dvh - 40px);}
+        #helpDialog[open] {display:flex;flex-direction:column;}
+        .help-header {display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid #ffffff14;flex-shrink:0;}
+        .help-kicker {font-size:10px;color:#8fa7c7;letter-spacing:2px;}
+        #helpDialog h2 {font-size:21px;margin:6px 0 0;}
+        #helpCloseBtn {width:34px;height:34px;border:1px solid #ffffff1f;border-radius:8px;background:#26364e;color:#d9e8ff;font-size:23px;cursor:pointer;}
+        .help-content {overflow-y:auto;min-height:0;padding:4px 24px 20px;overscroll-behavior:contain;}
+        .help-content section {padding-top:20px;}
+        .help-content h3 {font-size:13px;color:#b8d6ff;margin:0 0 8px;}
+        .help-content p {font-size:12px;line-height:1.85;color:#b8c7dc;margin:6px 0;}
+        .help-content strong {color:#e4efff;}.help-content kbd {font-size:11px;background:#26364e;border-radius:4px;padding:2px 5px;}
+        .help-footer {padding:14px 24px;border-top:1px solid #ffffff14;text-align:right;flex-shrink:0;}
+        #helpDoneBtn {padding:9px 22px;border:1px solid #6ba0ed;border-radius:8px;background:#3479e6;color:white;font-size:12px;cursor:pointer;}
+        #helpDialog button:focus-visible,#editorModeLabel:focus-visible {outline:2px solid #9fc4ff;outline-offset:3px;}
+
+        /* 以明确状态统一控制宽度和可见项，避免旧布局规则覆盖收起状态。 */
+        #editorPanel [hidden] {display:none!important;}
+        #editorPanel[data-expanded="false"] .advanced-control,
+        #editorPanel[data-expanded="false"] [data-hide-collapsed] {display:none!important;}
+        #editorPanel[data-expanded="false"] .text-main-row {grid-template-columns:49px minmax(0,1fr);padding-bottom:0;gap:8px;}
+        #editorPanel[data-expanded="false"] .text-card {padding:10px;}
+        #editorPanel[data-expanded="false"] .panel-toolbar {flex-wrap:nowrap;}
+        #editorPanel[data-expanded="false"] .panel-toolbar .mode-stack {flex:1 1 auto;min-width:0;}
+        #editorPanel[data-expanded="false"] #saveStatus {display:none;}
+        #toggleEditorBtn {position:relative;z-index:3;pointer-events:auto;flex-shrink:0;}
+        @media(min-width:861px) {
+            #editorPanel[data-expanded="true"] {flex:0 0 420px;width:420px;min-width:0;max-width:420px;}
+            #editorPanel[data-expanded="false"] {flex:0 0 240px;width:240px;min-width:0;max-width:240px;}
+            .container {flex-wrap:nowrap;}
+            .canvas-wrapper {flex:1 1 0;min-width:0;}
+        }
+        @media(min-width:861px) and (max-width:1100px) {
+            #editorPanel[data-expanded="true"] {flex-basis:380px;width:380px;max-width:380px;}
+        }
+        @media(max-width:860px) {#editorPanel[data-expanded]{width:100%;max-width:none;flex:auto;}}
+
+        /* 收起布局保留背景工具、保存提示与头像恢复按钮；仅隐藏高级设置和导出。 */
+        #editorPanel[data-expanded="false"] #saveStatus {display:block;}
+        #editorPanel[data-expanded="false"] .panel-toolbar {flex-wrap:wrap;}
+        #editorPanel[data-expanded="false"] .panel-toolbar .mode-stack {flex:1 1 110px;order:0;}
+        #editorPanel[data-expanded="false"] .panel-toolbar .collapse-toggle {order:1;}
+        #editorPanel[data-expanded="false"] .panel-header-actions {display:flex;order:2;flex-basis:100%;margin-top:5px;}
+        #editorPanel[data-expanded="false"] .panel-header-actions .btn {flex:1;}
+        #editorPanel[data-expanded="false"] .text-main-row {grid-template-columns:58px minmax(0,1fr);padding-bottom:0;}
+        #editorPanel[data-expanded="false"] .export-actions #copyImageBtn {width:100%;flex:1;}
     </style>
 </head>
 
@@ -708,7 +749,7 @@
         <!-- 控制面板 -->
         <div class="panel" id="editorPanel">
             <div class="panel-toolbar">
-                <div class="mode-stack"><span id="editorModeLabel" class="mode-label">全部设置</span><span id="saveStatus" role="status" aria-live="polite">正在恢复本地记录…</span></div>
+                <div class="mode-stack"><button type="button" id="editorModeLabel" class="mode-label" aria-haspopup="dialog" aria-controls="helpDialog" title="查看全部功能说明">全部设置说明</button><span id="saveStatus" role="status" aria-live="polite">正在恢复本地记录…</span></div>
                 <div class="panel-header-actions"><span class="background-size-hint" title="建议使用 1280 × 720 像素（16:9）的背景图片；其他尺寸也会等比例显示。">建议尺寸<span>1280 × 720 px</span></span><button class="btn btn-success" id="uploadBgHeaderBtn">
                 🖼️ 上传背景
             </button><button class="btn btn-danger" id="resetTemplateBtn">🔄 重置</button></div>
@@ -752,7 +793,7 @@
                 <div class="text-main-row">
                     <label for="userIdInput">会员账号</label>
                     <input type="text" id="userIdInput" value="8776843" data-key="userId" />
-                    <div class="inline-color" title="会员账号颜色"><input aria-label="UID颜色" type="color" id="userIdColor" value="#ff0000" /><span class="color-hex" id="userIdColorHex">#ff0000</span><input class="hex-code-input" id="userIdColorCode" type="text" value="#FF0000" maxlength="7" spellcheck="false" autocomplete="off" aria-label="会员账号颜色代码" title="输入十六进制颜色，例如 #FF0000" placeholder="#FF0000" /></div>
+                    <div class="inline-color advanced-control" title="会员账号颜色"><input aria-label="UID颜色" type="color" id="userIdColor" value="#ff0000" /><span class="color-hex" id="userIdColorHex">#ff0000</span><input class="hex-code-input" id="userIdColorCode" type="text" value="#FF0000" maxlength="7" spellcheck="false" autocomplete="off" aria-label="会员账号颜色代码" title="输入十六进制颜色，例如 #FF0000" placeholder="#FF0000" /></div>
                 </div>
                 <div class="text-detail-row advanced-control">
 <div class="compact-field"><label for="userIdX">X</label><input type="number" class="coord-input" id="userIdX" value="755" placeholder="X" /></div><div class="compact-field"><label for="userIdY">Y</label><input type="number" class="coord-input" id="userIdY" value="346" placeholder="Y" /></div><div class="compact-field"><label for="userIdSize">字号</label><input type="number" id="userIdSize" value="34" min="10" max="80" /></div>
@@ -764,7 +805,7 @@
                 <div class="text-main-row">
                     <label for="levelInput">等级</label>
                     <input type="text" id="levelInput" value="VIP1" data-key="level" />
-                    <div class="inline-color" title="等级颜色"><input aria-label="等级颜色" type="color" id="levelColor" value="#ff0000" /><span class="color-hex" id="levelColorHex">#ff0000</span><input class="hex-code-input" id="levelColorCode" type="text" value="#FF0000" maxlength="7" spellcheck="false" autocomplete="off" aria-label="等级颜色代码" title="输入十六进制颜色，例如 #FF0000" placeholder="#FF0000" /></div>
+                    <div class="inline-color advanced-control" title="等级颜色"><input aria-label="等级颜色" type="color" id="levelColor" value="#ff0000" /><span class="color-hex" id="levelColorHex">#ff0000</span><input class="hex-code-input" id="levelColorCode" type="text" value="#FF0000" maxlength="7" spellcheck="false" autocomplete="off" aria-label="等级颜色代码" title="输入十六进制颜色，例如 #FF0000" placeholder="#FF0000" /></div>
                 </div>
                 <div class="text-detail-row advanced-control">
 <div class="compact-field"><label for="levelX">X</label><input type="number" class="coord-input" id="levelX" value="892" placeholder="X" /></div><div class="compact-field"><label for="levelY">Y</label><input type="number" class="coord-input" id="levelY" value="423" placeholder="Y" /></div><div class="compact-field"><label for="levelSize">字号</label><input type="number" id="levelSize" value="34" min="10" max="80" /></div>
@@ -776,7 +817,7 @@
                 <div class="text-main-row">
                     <label for="rewardInput">金额</label>
                     <input type="text" id="rewardInput" value="50" data-key="reward" />
-                    <div class="inline-color" title="金额颜色"><input aria-label="奖励金额颜色" type="color" id="rewardColor" value="#ff0000" /><span class="color-hex" id="rewardColorHex">#ff0000</span><input class="hex-code-input" id="rewardColorCode" type="text" value="#FF0000" maxlength="7" spellcheck="false" autocomplete="off" aria-label="金额颜色代码" title="输入十六进制颜色，例如 #FF0000" placeholder="#FF0000" /></div>
+                    <div class="inline-color advanced-control" title="金额颜色"><input aria-label="奖励金额颜色" type="color" id="rewardColor" value="#ff0000" /><span class="color-hex" id="rewardColorHex">#ff0000</span><input class="hex-code-input" id="rewardColorCode" type="text" value="#FF0000" maxlength="7" spellcheck="false" autocomplete="off" aria-label="金额颜色代码" title="输入十六进制颜色，例如 #FF0000" placeholder="#FF0000" /></div>
                 </div>
                 <div class="text-detail-row advanced-control">
 <div class="compact-field"><label for="rewardX">X</label><input type="number" class="coord-input" id="rewardX" value="974" placeholder="X" /></div><div class="compact-field"><label for="rewardY">Y</label><input type="number" class="coord-input" id="rewardY" value="516" placeholder="Y" /></div><div class="compact-field"><label for="rewardSize">字号</label><input type="number" id="rewardSize" value="50" min="10" max="80" /></div>
@@ -785,7 +826,7 @@
 
 <input type="file" id="bgInput" accept="image/*" style="display: none" />
             <div class="btn-group export-actions" style="margin-top: 8px">
-                <button class="btn btn-success" id="exportPngBtn">💾 导出 PNG</button>
+                <button class="btn btn-success" id="exportPngBtn" data-hide-collapsed="true">💾 导出 PNG</button>
                 <button class="btn btn-primary" id="copyImageBtn">📋 复制</button>
             </div>
 
@@ -798,17 +839,22 @@
         </div>
     </div>
 
+<dialog id="resetDialog" aria-labelledby="resetDialogTitle" aria-describedby="resetDialogDescription"><form method="dialog" class="reset-dialog-content"><div class="reset-dialog-icon" aria-hidden="true">↺</div><h2 id="resetDialogTitle">确认重置？</h2><p id="resetDialogDescription">头像、背景、会员账号、等级、金额及布局将恢复默认设置，并覆盖当前自动保存的内容。</p><div class="reset-dialog-actions"><button type="submit" value="cancel" class="reset-dialog-cancel" autofocus>取消</button><button type="submit" value="confirm" class="reset-dialog-confirm">确认重置</button></div></form></dialog>
 
-    <dialog id="resetDialog" aria-labelledby="resetDialogTitle" aria-describedby="resetDialogDescription">
-        <form method="dialog" class="reset-dialog-content">
-            <div class="reset-dialog-icon" aria-hidden="true">↺</div>
-            <h2 id="resetDialogTitle">确认重置？</h2>
-            <p id="resetDialogDescription">头像、背景、会员账号、等级、金额及布局将恢复默认设置，并覆盖当前自动保存的内容。</p>
-            <div class="reset-dialog-actions">
-                <button type="submit" value="cancel" class="reset-dialog-cancel" autofocus>取消</button>
-                <button type="submit" value="confirm" class="reset-dialog-confirm">确认重置</button>
-            </div>
-        </form>
+    <dialog id="helpDialog" aria-labelledby="helpDialogTitle">
+        <div class="help-header"><div><span class="help-kicker">使用指南</span><h2 id="helpDialogTitle">全部设置说明</h2></div><button type="button" id="helpCloseBtn" aria-label="关闭说明" autofocus>×</button></div>
+        <div class="help-content">
+            <section><h3>01 · 上传背景</h3><p>建议尺寸为 <strong>1280 × 720 px（16:9）</strong>。点击「上传背景」选择本地图片；其他比例也可以使用。更换背景后，可按新图的位置重新调整头像和文字。</p></section>
+            <section><h3>02 · 头像上传、移动与大小</h3><p>点击「上传头像」选择图片，头像会裁切为圆形。直接拖动左侧头像即可移动，右侧 X、Y 数值与滑块实时同步。也可拖动滑块或输入数值：X 增大向右，Y 增大向下；「大小」为头像直径，单位为像素。</p><p>「恢复位置」恢复头像默认位置和大小；上传头像旁的「×」恢复默认头像。</p></section>
+            <section><h3>03 · 会员账号、等级与金额</h3><p>在右侧输入框修改内容，左侧即时更新。直接拖动左侧的会员账号、等级或金额，可调整文字位置，右侧 X、Y 会实时更新。<strong>双击左侧文字</strong>，会定位并选中对应输入框，方便直接修改。</p><p>每张卡片第二行可以设置 X、Y 坐标及字号。字体为 Arial Black 斜体；设备缺少该字体时，浏览器会使用备用字体。</p></section>
+            <section><h3>04 · 文字颜色</h3><p>点击内容旁的色块选择颜色，或在颜色代码输入框中输入 <strong>#FF0000</strong> 等十六进制色值。支持六位代码、三位简写和省略 # 的写法；有效色值会即时应用并自动保存。</p></section>
+            <section><h3>05 · 展开、收起与预览缩放</h3><p>首次打开默认展开，显示全部设置。点击「收起」，右侧变成快捷编辑窄栏，保留头像上传、账号、等级、金额等常用项；点击「展开」恢复全部设置。</p><p>桌面端右侧变窄时，左侧图片按可用宽度等比例放大；展开时等比例缩小，不拉伸。小屏幕采用上下布局。缩放只影响预览，不改变导出尺寸。背景图本身不能拖动，能拖动的是头像和文字。</p></section>
+            <section><h3>06 · 自动保存</h3><p>头像、背景、文字内容、位置、大小、颜色及展开／收起状态会自动保存在当前浏览器。看到「已自动保存到此浏览器」后即可关闭，重新打开会恢复上次编辑。</p><p>请使用同一浏览器打开文件。换浏览器、使用无痕模式或清除浏览器数据，可能无法保留记录；本地保存不会同步到其他设备。</p></section>
+            <section><h3>07 · 导出与复制</h3><p>「导出 PNG」将图片保存为 PNG 文件；「复制」将生成的图片写入剪贴板，方便粘贴。两者使用当前画布的 2 倍分辨率输出。复制需要浏览器允许剪贴板访问；若复制失败，可使用导出 PNG。</p></section>
+            <section><h3>08 · 重置</h3><p>点击「重置」打开确认弹窗。确认后，背景、头像、文字内容及布局恢复默认，并覆盖当前自动保存记录。「取消」、Esc 或点击弹窗外部可取消操作。</p></section>
+            <section><h3>09 · 快捷键</h3><p><kbd>Ctrl + S</kbd> 导出 PNG　<kbd>Ctrl + Shift + C</kbd> 复制图片<br><kbd>Enter</kbd> 结束输入　<kbd>Esc</kbd> 退出当前输入或关闭弹窗。</p></section>
+        </div>
+        <div class="help-footer"><button type="button" id="helpDoneBtn">我知道了</button></div>
     </dialog>
 
     <script>
@@ -876,16 +922,23 @@
             const editorPanel = document.getElementById('editorPanel');
             const toggleEditorBtn = document.getElementById('toggleEditorBtn');
             function setEditorExpanded(expanded) {
-                editorPanel.classList.toggle('is-collapsed', !expanded);
-                editorPanel.querySelectorAll('.advanced-control').forEach(control => { control.hidden = !expanded; });
-                toggleEditorBtn.setAttribute('aria-expanded', String(expanded));
-                document.getElementById('toggleEditorText').textContent = expanded ? '收起' : '展开';
-                document.getElementById('editorModeLabel').textContent = expanded ? '全部设置' : '快捷编辑';
+                const isExpanded = expanded === true;
+                editorPanel.dataset.expanded = String(isExpanded);
+                editorPanel.classList.toggle('is-collapsed', !isExpanded);
+                editorPanel.querySelectorAll('.advanced-control, [data-hide-collapsed]').forEach(control => {
+                    control.hidden = !isExpanded;
+                });
+                toggleEditorBtn.setAttribute('aria-expanded', String(isExpanded));
+                document.getElementById('toggleEditorText').textContent = isExpanded ? '收起' : '展开';
+                document.getElementById('editorModeLabel').textContent = isExpanded ? '全部设置说明' : '快捷编辑';
+                // 等待布局完成后统一重算图片显示比例。
                 requestAnimationFrame(() => scheduleFitCanvas());
             }
-            toggleEditorBtn.addEventListener('click', () => {
-                setEditorExpanded(toggleEditorBtn.getAttribute('aria-expanded') !== 'true');
-            });
+            toggleEditorBtn.onclick = event => {
+                event.preventDefault();
+                event.stopPropagation();
+                setEditorExpanded(editorPanel.dataset.expanded === 'false');
+            };
             setEditorExpanded(true);
 
             const DEFAULT_AVATAR_LAYOUT = Object.freeze({ x: 255, y: 380, radius: 159 });
@@ -1674,6 +1727,20 @@
             });
 
             // ======================== 重置模板 ========================
+            const helpDialog = document.getElementById('helpDialog');
+            const helpTrigger = document.getElementById('editorModeLabel');
+            helpTrigger.addEventListener('click', () => {
+                if (!helpDialog.open) {
+                    helpDialog.showModal();
+                    helpDialog.querySelector('.help-content').scrollTop = 0;
+                }
+            });
+            for (const id of ['helpCloseBtn', 'helpDoneBtn']) document.getElementById(id).addEventListener('click', () => helpDialog.close());
+            helpDialog.addEventListener('close', () => helpTrigger.focus({ preventScroll: true }));
+            helpDialog.addEventListener('click', event => {
+                const rect = helpDialog.getBoundingClientRect();
+                if (event.target === helpDialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) helpDialog.close();
+            });
             const resetDialog = document.getElementById('resetDialog');
             function requestResetConfirmation() {
                 if (resetDialog.open) return Promise.resolve(false);
@@ -1879,7 +1946,7 @@
 
             // ======================== 快捷键 ========================
             document.addEventListener("keydown", (e) => {
-                if (resetDialog.open) return;
+                if (resetDialog.open || helpDialog.open) return;
                 if (e.ctrlKey && e.key.toLowerCase() === "s") {
                     e.preventDefault();
                     exportPngBtn.click();
@@ -2103,7 +2170,7 @@
             });
 
         })();
-        </script>
+            </script>
 </body>
 
 </html>
